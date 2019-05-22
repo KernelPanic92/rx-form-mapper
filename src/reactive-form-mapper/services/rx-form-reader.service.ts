@@ -1,5 +1,5 @@
 import { AbstractControl, FormArray, FormControl, FormGroup } from '@angular/forms';
-import { fromPairs } from 'lodash';
+import { fromPairs, isNil, map, isEqual } from 'lodash';
 import { FieldDescriptor, FieldType } from '../descriptors/field-descriptor';
 import { FormMapperStore } from '../store/form-mapper-store';
 import { Class } from '../types';
@@ -9,43 +9,49 @@ import { Injectable } from '@angular/core';
 export class RxFormReaderService {
 
 	public readFormArray<T>(type: Class<T>, form: FormArray): T[] {
-		if (form == null) { return null; }
-		return form.controls.map(control => this.readFormGroup(type, control as FormGroup));
+		if (isNil(form)) {
+			return void 0;
+		}
+
+		if (! (form instanceof FormArray)) {
+			throw new Error(`unexpected [${this.getClassName(form)}] at [${type.name || type.constructor.name}]`);
+		}
+
+		if (isEqual(type, Array)) {
+			throw new Error(`unexpected [Array] type`);
+		}
+
+		return map(form.controls, control => this.readFormGroup(type, control as FormGroup));
 	}
 
 	public readFormGroup<T>(type: Class<T>, form: FormGroup): T {
-		if (form == null) { return null; }
-		const formControls = FormMapperStore.instance.fields.filter(input => input.target === type && input.fieldType === FieldType.FORM_CONTROL).map(formControl => this.readFormControlField(form, formControl));
-		const formGroups = FormMapperStore.instance.fields.filter(input => input.target === type && input.fieldType === FieldType.FORM_GROUP).map(formControl => this.readFormGroupField(form, formControl));
-		return Object.assign(new (type as any)(), fromPairs([ ...formControls, ...formGroups]));
+		if (isNil(form)) { return void 0; }
+		if (! (form instanceof FormGroup)) {
+			throw new Error(`unexpected [${this.getClassName(form)}] at [${type.name || type.constructor.name}]`);
+		}
+		const fields = FormMapperStore.instance.findFieldsByTarget(type).map(f => this.readFormField(form, f));
+		return Object.assign(new (type as any)(), fromPairs(fields));
 	}
 
-	private readFormControlField<T>(form: AbstractControl, fieldDescriptor: FieldDescriptor): [string, any] {
+	private readFormField(form: AbstractControl, fieldDescriptor: FieldDescriptor): [string, any] {
 		const control = form.get(fieldDescriptor.propertyName);
-		let fieldValue;
-		if (control == null) {
-			fieldValue = null;
-		} else if (control instanceof FormControl && !fieldDescriptor.isArray) {
+		let fieldValue: any;
+		if (isNil(control)) {
+			fieldValue = void 0;
+		} else if (control instanceof FormControl && fieldDescriptor.fieldType === FieldType.FORM_CONTROL) {
 			fieldValue = control.value;
+		} else if (control instanceof FormGroup && fieldDescriptor.fieldType === FieldType.FORM_GROUP && !fieldDescriptor.isArray) {
+			fieldValue = this.readFormGroup(fieldDescriptor.clazz, control);
+		} else if (control instanceof FormArray && fieldDescriptor.fieldType === FieldType.FORM_GROUP && fieldDescriptor.isArray) {
+			fieldValue = this.readFormArray(fieldDescriptor.clazz, control);
 		} else {
-			const AbstractControlType = Object.getPrototypeOf(control).constructor;
-			throw new Error(`unexpected [${AbstractControlType.name}] at '${fieldDescriptor.propertyName}'`);
+			const expected = fieldDescriptor.isArray && fieldDescriptor.fieldType === FieldType.FORM_GROUP ? 'FORM_ARRAY' : fieldDescriptor.fieldType;
+			throw new Error(`unexpected [${this.getClassName(control)}] at '${fieldDescriptor.propertyName}' in [${fieldDescriptor.target.name}]. Expected ${expected}`);
 		}
 		return [fieldDescriptor.propertyName, fieldValue];
 	}
 
-	private readFormGroupField<T>(form: AbstractControl, fieldDescriptor: FieldDescriptor): [string, any] {
-		const control = form.get(fieldDescriptor.propertyName);
-		let fieldValue;
-		if (control == null) {
-			fieldValue = null;
-		} else if (control instanceof FormArray && fieldDescriptor.isArray) {
-			fieldValue = this.readFormArray(fieldDescriptor.clazz, control);
-		} else if (control instanceof FormGroup && !fieldDescriptor.isArray) {
-			fieldValue = this.readFormGroup(fieldDescriptor.clazz, control);
-		} else {
-			throw new Error(`unexpected [${Object.getPrototypeOf(control).constructor.name}] at '${fieldDescriptor.propertyName}'`);
-		}
-		return [fieldDescriptor.propertyName, fieldValue];
+	private getClassName<T>(instance: T): string {
+		return Object.getPrototypeOf(instance).constructor.name;
 	}
 }

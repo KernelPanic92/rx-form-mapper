@@ -3,6 +3,7 @@ import { FormArray, FormGroup } from '@angular/forms';
 import { RxFormReaderService } from './rx-form-reader.service';
 import { RxFormWriterService } from './rx-form-writer.service';
 import { Class } from '../types';
+import { isNil, clone } from 'lodash';
 
 @Injectable()
 export class RxFormMapper {
@@ -13,7 +14,7 @@ export class RxFormMapper {
 	public writeForm<T>(clazz: Class<T>, value: T[]): FormArray;
 	public writeForm<T>(clazz: Class<T>, value: T): FormGroup;
 	public writeForm<T>(clazzOrValue: Class<T> | T | T[], value?: T | T[]): FormArray | FormGroup {
-		if (clazzOrValue == null) return null;
+		if (isNil(clazzOrValue)) throw new Error(`unexpected [${clazzOrValue}] type`);
 		const clazz = typeof(clazzOrValue) === 'function' ? clazzOrValue : Object.getPrototypeOf(clazzOrValue).constructor;
 		value = typeof(clazzOrValue) === 'function'? value : clazzOrValue;
 		if (Array.isArray(value)) {
