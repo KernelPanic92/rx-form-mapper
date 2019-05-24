@@ -1,9 +1,9 @@
-import 'reflect-metadata';
-import { FormMapperStore } from '../store/form-mapper-store';
-import { MetadataDesignTypes } from '../reflect-metadata-design-types';
-import { Class } from '../types';
-import { FieldType } from '../descriptors/field-descriptor';
 import { isNil } from 'lodash';
+import 'reflect-metadata';
+import { EFieldType } from '../descriptors/field-descriptor';
+import { MetadataDesignTypes } from '../reflect-metadata-design-types';
+import { FormMapperStore } from '../store/form-mapper-store';
+import { Class } from '../types';
 
 export function FormGroup(): (target: Object, propertyName: string) => void;
 export function FormGroup(type: () => Class<any>): (target: Object, propertyName: string) => void;
@@ -18,7 +18,7 @@ export function FormGroup(type?: () => Class<any>): (target: Object, propertyNam
 			propertyName,
 			target: target.constructor,
 			isArray,
-			fieldType: FieldType.FORM_GROUP
+			fieldType: EFieldType.FORM_GROUP
 		});
 	};
 }

@@ -1,9 +1,9 @@
+import { Injectable } from '@angular/core';
 import { AbstractControl, FormArray, FormControl, FormGroup } from '@angular/forms';
-import { fromPairs, isNil, map, isEqual } from 'lodash';
-import { FieldDescriptor, FieldType } from '../descriptors/field-descriptor';
+import { fromPairs, isEqual, isNil, map } from 'lodash';
+import { EFieldType, FieldDescriptor } from '../descriptors/field-descriptor';
 import { FormMapperStore } from '../store/form-mapper-store';
 import { Class } from '../types';
-import { Injectable } from '@angular/core';
 
 @Injectable()
 export class RxFormReaderService {
@@ -29,7 +29,7 @@ export class RxFormReaderService {
 		if (! (form instanceof FormGroup)) {
 			throw new Error(`unexpected [${this.getClassName(form)}] at [${type.name || type.constructor.name}]`);
 		}
-		const fields = FormMapperStore.instance.findFieldsByTarget(type).map(f => this.readFormField(form, f));
+		const fields = FormMapperStore.instance.findClassFields(type).map(f => this.readFormField(form, f));
 		return Object.assign(new (type as any)(), fromPairs(fields));
 	}
 
@@ -38,14 +38,14 @@ export class RxFormReaderService {
 		let fieldValue: any;
 		if (isNil(control)) {
 			fieldValue = void 0;
-		} else if (control instanceof FormControl && fieldDescriptor.fieldType === FieldType.FORM_CONTROL) {
+		} else if (control instanceof FormControl && fieldDescriptor.fieldType === EFieldType.FORM_CONTROL) {
 			fieldValue = control.value;
-		} else if (control instanceof FormGroup && fieldDescriptor.fieldType === FieldType.FORM_GROUP && !fieldDescriptor.isArray) {
+		} else if (control instanceof FormGroup && fieldDescriptor.fieldType === EFieldType.FORM_GROUP && !fieldDescriptor.isArray) {
 			fieldValue = this.readFormGroup(fieldDescriptor.clazz, control);
-		} else if (control instanceof FormArray && fieldDescriptor.fieldType === FieldType.FORM_GROUP && fieldDescriptor.isArray) {
+		} else if (control instanceof FormArray && fieldDescriptor.fieldType === EFieldType.FORM_GROUP && fieldDescriptor.isArray) {
 			fieldValue = this.readFormArray(fieldDescriptor.clazz, control);
 		} else {
-			const expected = fieldDescriptor.isArray && fieldDescriptor.fieldType === FieldType.FORM_GROUP ? 'FORM_ARRAY' : fieldDescriptor.fieldType;
+			const expected = fieldDescriptor.isArray && fieldDescriptor.fieldType === EFieldType.FORM_GROUP ? 'FORM_ARRAY' : fieldDescriptor.fieldType;
 			throw new Error(`unexpected [${this.getClassName(control)}] at '${fieldDescriptor.propertyName}' in [${fieldDescriptor.target.name}]. Expected ${expected}`);
 		}
 		return [fieldDescriptor.propertyName, fieldValue];

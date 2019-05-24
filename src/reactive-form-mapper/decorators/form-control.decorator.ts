@@ -1,7 +1,7 @@
 import 'reflect-metadata';
-import { FormMapperStore } from '../store/form-mapper-store';
+import { EFieldType } from '../descriptors/field-descriptor';
 import { MetadataDesignTypes } from '../reflect-metadata-design-types';
-import { FieldType } from '../descriptors/field-descriptor';
+import { FormMapperStore } from '../store/form-mapper-store';
 
 export function FormControl(): (target: Object, propertyName: string) => void {
 	return (target: Object, propertyName: string) => {
@@ -10,7 +10,7 @@ export function FormControl(): (target: Object, propertyName: string) => void {
 			propertyName,
 			target: target.constructor,
 			isArray: false,
-			fieldType: FieldType.FORM_CONTROL
+			fieldType: EFieldType.FORM_CONTROL
 		});
 	};
 }

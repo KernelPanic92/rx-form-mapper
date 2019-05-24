@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { FormArray, FormGroup } from '@angular/forms';
+import { isNil } from 'lodash';
+import { Class } from '../types';
 import { RxFormReaderService } from './rx-form-reader.service';
 import { RxFormWriterService } from './rx-form-writer.service';
-import { Class } from '../types';
-import { isNil, clone } from 'lodash';
 
 @Injectable()
 export class RxFormMapper {
@@ -16,7 +16,7 @@ export class RxFormMapper {
 	public writeForm<T>(clazzOrValue: Class<T> | T | T[], value?: T | T[]): FormArray | FormGroup {
 		if (isNil(clazzOrValue)) throw new Error(`unexpected [${clazzOrValue}] type`);
 		const clazz = typeof(clazzOrValue) === 'function' ? clazzOrValue : Object.getPrototypeOf(clazzOrValue).constructor;
-		value = typeof(clazzOrValue) === 'function'? value : clazzOrValue;
+		value = typeof(clazzOrValue) === 'function' ? value : clazzOrValue;
 		if (Array.isArray(value)) {
 			return this.formWriter.writeFormArray(clazz, value);
 		} else {

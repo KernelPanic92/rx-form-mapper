@@ -1,13 +1,15 @@
-import { AbstractControl, FormArray, FormControl, FormGroup } from '@angular/forms';
-import { fromPairs, get, map, isNil, isEqual } from 'lodash';
-import { FieldDescriptor, FieldType } from '../descriptors/field-descriptor';
+import { Injectable } from '@angular/core';
+import { AbstractControl, FormArray, FormControl, FormGroup} from '@angular/forms';
+import { fromPairs, get, isEqual, isNil, map } from 'lodash';
+import { EFieldType, FieldDescriptor } from '../descriptors/field-descriptor';
 import { FormMapperStore } from '../store/form-mapper-store';
 import { Class } from '../types';
-import { Injectable } from '@angular/core';
+import { FormValidatorAssignerService } from './form-validator-assigner.service';
 
 @Injectable()
 export class RxFormWriterService {
 
+	constructor(private readonly formValidatorAssigner: FormValidatorAssignerService) {}
 	public writeFormArray<T>(type: Class<T>, values: T[]): FormArray {
 		if (isNil(type) || isEqual(type, Array)) {
 			throw new Error(`unexpected type [${type ? type.name : type}]`);
@@ -19,20 +21,22 @@ export class RxFormWriterService {
 		if (isNil(type) || isEqual(type, Array)) {
 			throw new Error(`unexpected type [${type ? type.name : type}]`);
 		}
-		const fields = FormMapperStore.instance.findFieldsByTarget(type).map(f => this.writeFormField(value, f));
-		return new FormGroup(fromPairs([...fields]));
+		const fields = FormMapperStore.instance.findClassFields(type).map(f => this.writeFormField(value, f));
+		const formGroup = new FormGroup(fromPairs([...fields]));
+		this.formValidatorAssigner.assignValidators(type, formGroup);
+		return formGroup;
 	}
 
 	private writeFormField<T>(targetValue: T, FieldDescriptor: FieldDescriptor): [string, AbstractControl] {
 		const fieldValue = get(targetValue, FieldDescriptor.propertyName);
 		const fieldType = FieldDescriptor.fieldType;
 		let control: AbstractControl;
-		if (fieldType === FieldType.FORM_CONTROL) {
+		if (fieldType === EFieldType.FORM_CONTROL) {
 			control = new FormControl(fieldValue);
-		} else if (fieldType === FieldType.FORM_GROUP && !FieldDescriptor.isArray) {
+		} else if (fieldType === EFieldType.FORM_GROUP && !FieldDescriptor.isArray) {
 			control = this.writeFormGroup(FieldDescriptor.clazz, fieldValue);
-		} else if (fieldType === FieldType.FORM_GROUP && FieldDescriptor.isArray) {
-			control = this.writeFormArray(FieldDescriptor.clazz, fieldValue)
+		} else if (fieldType === EFieldType.FORM_GROUP && FieldDescriptor.isArray) {
+			control = this.writeFormArray(FieldDescriptor.clazz, fieldValue);
 		} else {
 			throw new Error(`unexpected type at '${FieldDescriptor.propertyName}'`);
 		}

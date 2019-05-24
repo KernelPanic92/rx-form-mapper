@@ -1,12 +1,11 @@
+import { inject, TestBed } from '@angular/core/testing';
 import {
 	FormArray as RxFormArray,
 	FormControl as RxFormControl,
 	FormGroup as RxFormGroup
 } from '@angular/forms';
-import { TestBed, inject } from '@angular/core/testing';
 import { FormControl, FormGroup, FormMapperModule } from '..';
 import { RxFormReaderService } from '../services/rx-form-reader.service';
-
 
 describe('RxFormReader', () => {
 	beforeEach(() => {
