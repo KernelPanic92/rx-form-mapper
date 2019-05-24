@@ -12,4 +12,4 @@ import { RxFormWriterService } from './services/rx-form-writer.service';
 		RxFormMapper
 	]
 })
-export class FormMapperModule {}
+export class RxFormMapperModule {}

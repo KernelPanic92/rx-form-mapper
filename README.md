@@ -72,6 +72,22 @@ export class UserEditorComponent {
 
 ```
 
+## Getting started
+
+### Import the component modules
+Import the NgModule for RxFormMapper
+
+```typescript
+import { RxFormMapperModule } from 'rx-form-mapper';
+
+@NgModule({
+  ...
+  imports: [RxFormMapperModule],
+  ...
+})
+export class MyAppModule { }
+```
+
 ## Decorators
 
 ### @FormControl

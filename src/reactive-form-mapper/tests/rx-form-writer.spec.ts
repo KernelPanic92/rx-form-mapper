@@ -6,13 +6,13 @@ import {
 	Validators
 } from '@angular/forms';
 import { of } from 'rxjs';
-import { AsyncValidator, FormControl, FormGroup, FormMapperModule, Validator } from '..';
+import { AsyncValidator, FormControl, FormGroup, RxFormMapperModule, Validator } from '..';
 import { RxFormWriterService } from '../services/rx-form-writer.service';
 
 describe('RxFormWriter', () => {
 	beforeEach(() => {
 		TestBed.configureTestingModule({
-			imports: [FormMapperModule]
+			imports: [RxFormMapperModule]
 		}).compileComponents();
 	});
 

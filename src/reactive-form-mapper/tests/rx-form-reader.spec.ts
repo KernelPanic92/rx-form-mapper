@@ -4,13 +4,13 @@ import {
 	FormControl as RxFormControl,
 	FormGroup as RxFormGroup
 } from '@angular/forms';
-import { FormControl, FormGroup, FormMapperModule } from '..';
+import { FormControl, FormGroup, RxFormMapperModule } from '..';
 import { RxFormReaderService } from '../services/rx-form-reader.service';
 
 describe('RxFormReader', () => {
 	beforeEach(() => {
 		TestBed.configureTestingModule({
-			imports: [FormMapperModule]
+			imports: [RxFormMapperModule]
 		}).compileComponents();
 	});
 
