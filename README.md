@@ -88,6 +88,17 @@ import { RxFormMapperModule } from 'rx-form-mapper';
 export class MyAppModule { }
 ```
 
+### Inject RxFormMapper in your component
+
+```typescript
+import { RxFormMapper } from 'rx-form-mapper';
+
+@Component({ ... })
+export class MyComponent { 
+	constructor(private readonly rxFormMapper: RxFormMapper) {}
+}
+```
+
 ## Decorators
 
 ### @FormControl
