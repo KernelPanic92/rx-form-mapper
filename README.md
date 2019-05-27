@@ -131,7 +131,7 @@ export class Child {}
 
 export class User {
 	@FormGroup()
-	father: Child;
+	child: Child;
 }
 
 ```
