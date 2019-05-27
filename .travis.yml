@@ -12,13 +12,12 @@ before_install:
 after_success:
 - codecov --file coverage/lcov.info --disable search
 before_deploy:
-  - cd dist/rx-form-mapper
+- cd dist/rx-form-mapper
 deploy:
   provider: npm
   email: iacopociao1992@gmail.com
-  skip_cleanup: true
   api_key:
-    secure: $NPM_TOKEN
+    secure: EomYEE+YHjoPYvfQDS02AHQ6ZQnI/8G9REAnNJ4pG5YPhVLLh881nDZSOMMuUvZqrdPAr+xePMJdxPod9cv95FvhkYEgckzmukJDKPN34HbK1gEtnYs7u4OIpr9wl65B8R5CEq/5/gVPDGvmaNrjvYQwjn81kHFnOxw1AtBWfsTgB54dk3+ikA1xtwXvXyy5odECVSKcRIDs4WmwgXm3hcaxnWL1pWNWB9vum5a6V13A2MrHlaE203hnEVCyioqPbiWCODq42e/3o4xK0LOu3fJYIUzjhCZpV80+jqY8oH5vAy5lgrza8xQRfZT+ZghgHZK9Jkiz5gFMgMpsMad30wq8KBudnVK9uTuzmannaL7LwWueFShoegSqCRX/Seyuzw906+IUr5hRQFmomsFDFj68YIp5N0mxQJeDRtgPO+y+KDz6HUlUErl+0rsPTxUghyZEPpybucixkoFvd4LmiT0rVF/JsODtX3+dM6KooEe3nTRte4GXTK7SVIaiUwqX+N6JIsX3YfC4AL6wWABe63pzF5iHpipSunSSZ8nPK34PVHdoJ8Qj7Z2JNJDMyJznQWcbu0aUeqKE8AqRPglLuaYC5k7O/gk0N+NYHYKQs4hmlKPo/ITzHNXiS2Nr0jXeksGjgVzhTEI29I+r0lsK4zvrCoJRF43WneqkSa6TLd4=
   on:
     branch: master
     repo: KernelPanic92/rx-form-mapper
