@@ -1,0 +1,9 @@
+sudo: required
+addons:
+  chrome: stable
+language: node_js
+node_js:
+- node
+script:
+- npm run test-ci
+- npm run build-ci

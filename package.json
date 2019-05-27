@@ -4,8 +4,10 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build",
-    "test": "ng test",
+	"build": "ng build",
+	"build-ci": "ng build --prod",
+	"test": "ng test",
+	"test-ci": "ng test my-first-lib --watch=false --browsers=ChromeHeadless",
     "lint": "ng lint",
     "e2e": "ng e2e"
   },
