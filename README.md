@@ -4,6 +4,8 @@
 
 RxFormMapper is a framework developed for angular and allows you to convert, by annotation, classes into reactive form and vice versa.
 
+[![Build Status](https://travis-ci.org/KernelPanic92/rx-form-mapper.svg?branch=master)](https://travis-ci.org/KernelPanic92/rx-form-mapper)
+
 ## What is RxFormMapper
 
 Reactive forms use an explicit and immutable approach to managing the state of a form at a given point in time. Each change to the form state returns a new state, which maintains the integrity of the model between changes. Reactive forms are built around observable streams, where form inputs and values are provided as streams of input values, which can be accessed synchronously.
