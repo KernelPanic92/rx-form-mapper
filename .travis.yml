@@ -20,5 +20,5 @@ deploy:
   api_key:
     secure: $NPM_TOKEN
   on:
-    tags: true
+    branch: master
     repo: KernelPanic92/rx-form-mapper
