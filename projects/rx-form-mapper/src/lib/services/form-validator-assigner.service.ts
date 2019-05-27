@@ -14,7 +14,7 @@ export class FormValidatorAssignerService {
 		if (isNil(form)) return;
 		this.setValidators(type, form);
 		this.setAsyncValidators( type, form);
-		FormMapperStore.instance.findClassFields(type)
+		FormMapperStore.getInstance().findClassFields(type)
 			.forEach(fieldDescriptor => {
 				this.setValidators(type, form, fieldDescriptor);
 				this.setAsyncValidators(type, form, fieldDescriptor);
@@ -24,7 +24,7 @@ export class FormValidatorAssignerService {
 	private setValidators<T>(type: Class<T>, abstractControl: AbstractControl, fieldDescriptor?: FieldDescriptor) {
 		const control = fieldDescriptor ? abstractControl.get(fieldDescriptor.propertyName) : abstractControl;
 		if (isNil(control)) return;
-		const store = FormMapperStore.instance;
+		const store = FormMapperStore.getInstance();
 		const validatorDescriptors = fieldDescriptor ? store.findPropertyValidators(type, fieldDescriptor.propertyName) : store.findClassValidators(type);
 		let validators = validatorDescriptors.map(v => v.validator);
 		const controlValidator = control.validator;
@@ -36,7 +36,7 @@ export class FormValidatorAssignerService {
 
 	private setAsyncValidators<T>( type: Class<T>, control: AbstractControl, fieldDescriptor?: FieldDescriptor) {
 		if (isNil(control)) return;
-		const store = FormMapperStore.instance;
+		const store = FormMapperStore.getInstance();
 		const validatorDescriptors = fieldDescriptor ? store.findPropertyAsyncValidators(type, fieldDescriptor.propertyName) : store.findClassAsyncValidators(type);
 		const validators: AsyncValidatorFn[] = [];
 		for (const descriptor of validatorDescriptors) {

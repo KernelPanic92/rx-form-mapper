@@ -5,7 +5,7 @@ import { FormMapperStore } from '../store/form-mapper-store';
 
 export function FormControl(): (target: Object, propertyName: string) => void {
 	return (target: Object, propertyName: string) => {
-		FormMapperStore.instance.fields.push({
+		FormMapperStore.getInstance().fields.push({
 			clazz: Reflect.getMetadata(MetadataDesignTypes.TYPE, target, propertyName),
 			propertyName,
 			target: target.constructor,

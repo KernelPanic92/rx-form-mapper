@@ -29,7 +29,7 @@ export class RxFormReaderService {
 		if (! (form instanceof FormGroup)) {
 			throw new Error(`unexpected [${this.getClassName(form)}] at [${type.name || type.constructor.name}]`);
 		}
-		const fields = FormMapperStore.instance.findClassFields(type).map(f => this.readFormField(form, f));
+		const fields = FormMapperStore.getInstance().findClassFields(type).map(f => this.readFormField(form, f));
 		return Object.assign(new (type as any)(), fromPairs(fields));
 	}
 

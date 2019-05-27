@@ -13,7 +13,7 @@ export function FormGroup(type?: () => Class<any>): (target: Object, propertyNam
 		const isArray = reflectedType === Array;
 		const clazz = isNil(type) ? reflectedType : type();
 
-		FormMapperStore.instance.fields.push({
+		FormMapperStore.getInstance().fields.push({
 			clazz,
 			propertyName,
 			target: target.constructor,

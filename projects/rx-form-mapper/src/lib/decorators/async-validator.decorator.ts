@@ -9,14 +9,14 @@ export function AsyncValidator(AsyncValidator: AsyncValidatorFn): (target: Objec
 export function AsyncValidator(validatorOrServiceClass: AsyncValidatorFn | Class<any>, methodFactoryName?: string, methodArguments?: any[]): (target: Object, propertyName?: string) => void {
 	return (target: Object, propertyName?: string) => {
 		if (isFunction(validatorOrServiceClass) && isNil(methodFactoryName)) {
-			FormMapperStore.instance.asyncValidators.push({
+			FormMapperStore.getInstance().asyncValidators.push({
 				type: 'AsyncValidatorFn',
 				propertyName,
 				target: isNil(propertyName) ? target : target.constructor as any,
 				validator: validatorOrServiceClass
 			});
 		} else if (!isNil(validatorOrServiceClass.constructor)) {
-			FormMapperStore.instance.asyncValidators.push({
+			FormMapperStore.getInstance().asyncValidators.push({
 				type: 'ServiceMethodFactory',
 				propertyName,
 				target: isNil(propertyName) ? target : target.constructor as any,

@@ -21,7 +21,7 @@ export class RxFormWriterService {
 		if (isNil(type) || isEqual(type, Array)) {
 			throw new Error(`unexpected type [${type ? type.name : type}]`);
 		}
-		const fields = FormMapperStore.instance.findClassFields(type).map(f => this.writeFormField(value, f));
+		const fields = FormMapperStore.getInstance().findClassFields(type).map(f => this.writeFormField(value, f));
 		const formGroup = new FormGroup(fromPairs([...fields]));
 		this.formValidatorAssigner.assignValidators(type, formGroup);
 		return formGroup;

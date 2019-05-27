@@ -3,15 +3,11 @@ import { AsyncValidatorDescriptor } from '../descriptors/async-validator-descrip
 import { FieldDescriptor } from '../descriptors/field-descriptor';
 import { ValidatorDescriptor } from '../descriptors/validator-descriptor';
 import { Class } from '../types';
-
+declare const global;
+declare const window;
 export class FormMapperStore {
 
-	public readonly fields: FieldDescriptor[] = [];
-	public readonly validators: ValidatorDescriptor[] = [];
-	public readonly asyncValidators: AsyncValidatorDescriptor[] = [];
-	private constructor() {}
-
-	public static get instance(): FormMapperStore {
+	public static getInstance(): FormMapperStore {
 		const formMapperStoreKey = 'FormMapperStore';
 		const store = typeof(window) === undefined ? window : global;
 		if (!store[formMapperStoreKey]) {
@@ -19,6 +15,11 @@ export class FormMapperStore {
 		}
 		return store[formMapperStoreKey];
 	}
+
+	public readonly fields: FieldDescriptor[] = [];
+	public readonly validators: ValidatorDescriptor[] = [];
+	public readonly asyncValidators: AsyncValidatorDescriptor[] = [];
+	private constructor() {}
 
 	public findClassFields(type: Class<any>) {
 		return filter(this.fields, field => field.target === type);

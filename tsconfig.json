@@ -17,6 +17,14 @@
     "lib": [
       "es2018",
       "dom"
-    ]
+    ],
+    "paths": {
+      "rx-form-mapper": [
+        "dist/rx-form-mapper"
+      ],
+      "rx-form-mapper/*": [
+        "dist/rx-form-mapper/*"
+      ]
+    }
   }
 }
