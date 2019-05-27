@@ -13,6 +13,7 @@ after_success:
 - codecov --file coverage/lcov.info --disable search
 before_deploy:
 - cd dist/rx-form-mapper
+- npm config set registry https://registry.npmjs.org/
 deploy:
   provider: npm
   email: iacopociao1992@gmail.com
