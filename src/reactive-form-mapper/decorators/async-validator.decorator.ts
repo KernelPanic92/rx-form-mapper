@@ -6,22 +6,21 @@ import { Class } from '../types';
 
 export function AsyncValidator<T>(serviceClass: Class<T>, factoryMethod: keyof T, methodArguments?: any[]): (target: Object, propertyName?: string) => void;
 export function AsyncValidator(AsyncValidator: AsyncValidatorFn): (target: Object, propertyName?: string) => void;
-export function AsyncValidator(validatorOrserviceClass: AsyncValidatorFn | Class<any>, methodFactoryName?: string, methodArguments?: any[]): (target: Object, propertyName?: string) => void {
+export function AsyncValidator(validatorOrServiceClass: AsyncValidatorFn | Class<any>, methodFactoryName?: string, methodArguments?: any[]): (target: Object, propertyName?: string) => void {
 	return (target: Object, propertyName?: string) => {
-		if (isNil(validatorOrserviceClass)) return;
-		if (isFunction(validatorOrserviceClass) && isNil(methodFactoryName)) {
+		if (isFunction(validatorOrServiceClass) && isNil(methodFactoryName)) {
 			FormMapperStore.instance.asyncValidators.push({
 				type: 'AsyncValidatorFn',
 				propertyName,
 				target: isNil(propertyName) ? target : target.constructor as any,
-				validator: validatorOrserviceClass
+				validator: validatorOrServiceClass
 			});
-		} else if (!isNil(validatorOrserviceClass.constructor)) {
+		} else if (!isNil(validatorOrServiceClass.constructor)) {
 			FormMapperStore.instance.asyncValidators.push({
 				type: 'ServiceMethodFactory',
 				propertyName,
 				target: isNil(propertyName) ? target : target.constructor as any,
-				service: validatorOrserviceClass,
+				service: validatorOrServiceClass,
 				methodFactoryName,
 				methodArguments
 			});

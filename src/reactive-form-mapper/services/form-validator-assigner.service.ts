@@ -19,7 +19,6 @@ export class FormValidatorAssignerService {
 				this.setValidators(type, form, fieldDescriptor);
 				this.setAsyncValidators(type, form, fieldDescriptor);
 			});
-
 	}
 
 	private setValidators<T>(type: Class<T>, abstractControl: AbstractControl, fieldDescriptor?: FieldDescriptor) {
@@ -46,11 +45,7 @@ export class FormValidatorAssignerService {
 			}
 			if (descriptor.type === 'ServiceMethodFactory') {
 				const service = this.injector.get(descriptor.service);
-				if (isNil(service)) {
-					throw new Error(`No provider for ${descriptor.service.constructor.name}`);
-				}
 				const factoryMethod: Function = get(service, descriptor.methodFactoryName);
-
 				if (isNil(factoryMethod)) {
 					throw new Error(`No method '${descriptor.methodFactoryName}' in service [${descriptor.service.constructor.name}]`);
 				}
