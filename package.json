@@ -1,13 +1,18 @@
 {
   "name": "rx-form-mapper",
-  "version": "0.1.0",
+  "version": "0.1.1",
+  "description" : "Proper decorator-based transformation / serialization / deserialization of plain javascript classes to angular reactive forms",
   "author": {
     "email": "iacopociao1992@gmail.com",
     "name": "KernelPanic92",
     "url": "https://github.com/KernelPanic92"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/KernelPanic92/rx-form-mapper"
+  },
   "license": "MIT",
-  "keywords": ["angular", "reactive-form", "mapper", "converter", "decorator-pattern","typescript-library"],
+  "keywords": ["angular", "reactive-form", "mapper", "converter", "decorator-pattern", "typescript-library"],
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
