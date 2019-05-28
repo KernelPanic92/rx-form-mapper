@@ -1,8 +1,8 @@
 import { AsyncValidatorFn } from '@angular/forms';
-import { isFunction, isNil } from 'lodash';
 import 'reflect-metadata';
 import { FormMapperStore } from '../store/form-mapper-store';
 import { Class } from '../types';
+import { isFunction, isNil } from '../utils';
 
 export function AsyncValidator<T>(serviceClass: Class<T>, factoryMethod: keyof T, methodArguments?: any[]): (target: Object, propertyName?: string) => void;
 export function AsyncValidator(AsyncValidator: AsyncValidatorFn): (target: Object, propertyName?: string) => void;

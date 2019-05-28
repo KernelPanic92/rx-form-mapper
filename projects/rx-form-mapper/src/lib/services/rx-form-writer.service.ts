@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { AbstractControl, FormArray, FormControl, FormGroup} from '@angular/forms';
-import { fromPairs, get, isEqual, isNil, map } from 'lodash';
 import { EFieldType, FieldDescriptor } from '../descriptors/field-descriptor';
 import { FormMapperStore } from '../store/form-mapper-store';
 import { Class } from '../types';
+import { fromPairs, get, isNil, map } from '../utils';
 import { FormValidatorAssignerService } from './form-validator-assigner.service';
 
 @Injectable()
@@ -11,14 +11,14 @@ export class RxFormWriterService {
 
 	constructor(private readonly formValidatorAssigner: FormValidatorAssignerService) {}
 	public writeFormArray<T>(type: Class<T>, values: T[]): FormArray {
-		if (isNil(type) || isEqual(type, Array)) {
+		if (isNil(type) || type as any === Array) {
 			throw new Error(`unexpected type [${type ? type.name : type}]`);
 		}
 		return new FormArray(map(values, item => this.writeFormGroup(type, item)));
 	}
 
 	public writeFormGroup<T>(type: Class<T>, value: T): FormGroup {
-		if (isNil(type) || isEqual(type, Array)) {
+		if (isNil(type) || type as any === Array) {
 			throw new Error(`unexpected type [${type ? type.name : type}]`);
 		}
 		const fields = FormMapperStore.getInstance().findClassFields(type).map(f => this.writeFormField(value, f));

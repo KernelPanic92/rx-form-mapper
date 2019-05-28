@@ -1,8 +1,8 @@
-import { filter, isNil } from 'lodash';
 import { AsyncValidatorDescriptor } from '../descriptors/async-validator-descriptor';
 import { FieldDescriptor } from '../descriptors/field-descriptor';
 import { ValidatorDescriptor } from '../descriptors/validator-descriptor';
 import { Class } from '../types';
+import { filter, isNil } from '../utils';
 declare const global;
 declare const window;
 export class FormMapperStore {

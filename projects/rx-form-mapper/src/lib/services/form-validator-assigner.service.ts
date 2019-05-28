@@ -1,9 +1,9 @@
 import { Injectable, Injector } from '@angular/core';
 import { AbstractControl, AsyncValidatorFn, FormGroup } from '@angular/forms';
-import { get, head, isFunction, isNil, size } from 'lodash';
 import { FieldDescriptor } from '../descriptors/field-descriptor';
 import { FormMapperStore } from '../store/form-mapper-store';
 import { Class } from '../types';
+import { get, head, isFunction, isNil, size } from '../utils';
 
 @Injectable()
 export class FormValidatorAssignerService {

@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { AbstractControl, FormArray, FormControl, FormGroup } from '@angular/forms';
-import { fromPairs, isEqual, isNil, map } from 'lodash';
 import { EFieldType, FieldDescriptor } from '../descriptors/field-descriptor';
 import { FormMapperStore } from '../store/form-mapper-store';
 import { Class } from '../types';
+import { fromPairs, isNil, map } from '../utils';
 
 @Injectable()
 export class RxFormReaderService {
@@ -17,7 +17,7 @@ export class RxFormReaderService {
 			throw new Error(`unexpected [${this.getClassName(form)}] at [${type.name || type.constructor.name}]`);
 		}
 
-		if (isEqual(type, Array)) {
+		if (type as any === Array) {
 			throw new Error(`unexpected [Array] type`);
 		}
 

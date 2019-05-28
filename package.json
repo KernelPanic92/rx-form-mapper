@@ -1,7 +1,7 @@
 {
   "name": "rx-form-mapper",
   "version": "0.1.1",
-  "description" : "Proper decorator-based transformation / serialization / deserialization of plain javascript classes to angular reactive forms",
+  "description": "Proper decorator-based transformation / serialization / deserialization of plain javascript classes to angular reactive forms",
   "author": {
     "email": "iacopociao1992@gmail.com",
     "name": "KernelPanic92",
@@ -12,14 +12,21 @@
     "url": "https://github.com/KernelPanic92/rx-form-mapper"
   },
   "license": "MIT",
-  "keywords": ["angular", "reactive-form", "mapper", "converter", "decorator-pattern", "typescript-library"],
+  "keywords": [
+    "angular",
+    "reactive-form",
+    "mapper",
+    "converter",
+    "decorator-pattern",
+    "typescript-library"
+  ],
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-	"build": "ng build",
-	"build-ci": "ng build",
-	"test": "ng test",
-	"test-ci": "ng test --watch=false --browsers=ChromeHeadless",
+    "build": "ng build",
+    "build-ci": "ng build",
+    "test": "ng test",
+    "test-ci": "ng test --watch=false --browsers=ChromeHeadless",
     "lint": "ng lint",
     "e2e": "ng e2e"
   },
@@ -33,9 +40,7 @@
     "@angular/platform-browser": "~7.1.0",
     "@angular/platform-browser-dynamic": "~7.1.0",
     "@angular/router": "~7.1.0",
-    "@types/lodash": "^4.14.132",
     "core-js": "^2.5.4",
-    "lodash": "^4.17.11",
     "rxjs": "~6.3.3",
     "tslib": "^1.9.0",
     "zone.js": "~0.8.26"
