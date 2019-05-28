@@ -86,6 +86,13 @@ npm i rx-form-mapper --save
 
 ```
 
+`reflect-metadata` is required (with angular+ you should already have this dependency installed.)
+
+```bash
+npm i reflect-metadata --save
+
+```
+
 ### Import the component modules
 Import the NgModule for RxFormMapper
 
