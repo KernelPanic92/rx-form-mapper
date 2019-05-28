@@ -78,6 +78,14 @@ export class UserEditorComponent {
 
 ## Getting started
 
+
+### Install npm package
+
+```bash
+npm i rx-form-mapper --save
+
+```
+
 ### Import the component modules
 Import the NgModule for RxFormMapper
 
