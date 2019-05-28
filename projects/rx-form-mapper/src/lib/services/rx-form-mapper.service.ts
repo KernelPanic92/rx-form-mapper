@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { FormArray, FormGroup } from '@angular/forms';
-import { isNil } from 'lodash';
 import { Class } from '../types';
+import { isNil } from '../utils';
 import { RxFormReaderService } from './rx-form-reader.service';
 import { RxFormWriterService } from './rx-form-writer.service';
 

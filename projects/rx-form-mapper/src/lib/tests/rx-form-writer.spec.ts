@@ -5,8 +5,7 @@ import {
 	FormGroup as RxFormGroup,
 	Validators
 } from '@angular/forms';
-import { of } from 'rxjs';
-import { AsyncValidator, FormControl, FormGroup, RxFormMapperModule, Validator } from '..';
+import { FormControl, FormGroup, RxFormMapperModule } from '..';
 import { RxFormWriterService } from '../services/rx-form-writer.service';
 
 describe('RxFormWriter', () => {
