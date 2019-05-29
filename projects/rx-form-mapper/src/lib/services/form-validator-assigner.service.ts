@@ -10,7 +10,7 @@ export class FormValidatorAssignerService {
 
 	constructor(private readonly injector: Injector) {}
 
-	public assignValidators<T>(type: Class<T>, form: FormGroup) {
+	public assignValidators<T>(type: Class<T>, form: AbstractControl) {
 		if (isNil(form)) return;
 		this.setValidators(type, form);
 		this.setAsyncValidators( type, form);

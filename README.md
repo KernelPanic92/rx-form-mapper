@@ -231,3 +231,32 @@ export class User {
 }
 
 ```
+
+### @Converter
+
+If you want to customize the conversion of property, you can do it by @Converter decorator:
+
+```typescript
+
+export class User {
+	@FormControl()
+	name: string;
+
+	@Converter(() => BadgeConverter)
+	badge: Badge;
+}
+
+export class Badge {
+	name: string;
+}
+
+export class BadgeConverter extends RxFormMapperConverter<Badge> {
+	public toModel(type: new () => Badge, abstractControl: AbstractControl): Badge {
+		return abstractControl.value;
+	}
+	public toForm(type: new () => Badge, value: Badge): AbstractControl {
+		return new FormControl(value);
+	}
+}
+
+```

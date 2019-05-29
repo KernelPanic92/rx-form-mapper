@@ -1,11 +1,13 @@
 import { inject, TestBed } from '@angular/core/testing';
 import {
+	AbstractControl,
 	FormArray as RxFormArray,
 	FormControl as RxFormControl,
 	FormGroup as RxFormGroup
 } from '@angular/forms';
-import { FormControl, FormGroup, RxFormMapperModule } from '..';
+import { Converter, FormControl, FormGroup, RxFormMapperConverter, RxFormMapperModule } from '..';
 import { RxFormReaderService } from '../services/rx-form-reader.service';
+import { Class } from '../types';
 
 describe('RxFormReader', () => {
 	beforeEach(() => {
@@ -121,5 +123,69 @@ describe('RxFormReader', () => {
 
 		const formGroup = new RxFormGroup({field: new RxFormArray([new RxFormGroup({name: new RxFormControl('test')})])});
 		expect(reader.readFormGroup(TestClass, formGroup).field[0].name).toEqual('test');
+	}));
+
+	it('should be converted with custom converter', inject([RxFormReaderService], (reader: RxFormReaderService) => {
+
+		class TestCustomConverterClass {
+			public name: string;
+		}
+
+		class CustomConverter extends RxFormMapperConverter<TestCustomConverterClass> {
+			public toModel(type: Class<TestCustomConverterClass>, abstractControl: AbstractControl): TestCustomConverterClass {
+				const returnObj = new TestCustomConverterClass();
+				returnObj.name = abstractControl.value;
+				return returnObj;
+			}
+
+			public toForm(type: Class<TestCustomConverterClass>, value: TestCustomConverterClass): AbstractControl {
+				return new RxFormControl(value ? value.name : undefined);
+			}
+		}
+
+		class TestClass {
+			@Converter(() => CustomConverter)
+			public field: TestCustomConverterClass;
+		}
+
+		const form = new RxFormGroup({
+			field: new RxFormControl('test')
+		});
+		const value = reader.readFormGroup(TestClass, form);
+		expect(value.field instanceof TestCustomConverterClass).toBeTruthy();
+		expect(value.field.name).toEqual('test');
+	}));
+
+	it('should throw error on null converterFn', inject([RxFormReaderService], (reader: RxFormReaderService) => {
+
+		class TestCustomConverterClass {
+			public name: string;
+		}
+
+		class TestClass {
+			@Converter(null)
+			public field: TestCustomConverterClass;
+		}
+
+		const form = new RxFormGroup({
+			field: new RxFormControl('test')
+		});
+		expect(() =>  reader.readFormGroup(TestClass, form)).toThrow();
+	}));
+
+	it('should throw error on null converterFn result', inject([RxFormReaderService], (reader: RxFormReaderService) => {
+		class TestCustomConverterClass {
+			public name: string;
+		}
+
+		class TestClass {
+			@Converter(() => null)
+			public field: TestCustomConverterClass;
+		}
+
+		const form = new RxFormGroup({
+			field: new RxFormControl('test')
+		});
+		expect(() =>  reader.readFormGroup(TestClass, form)).toThrow();
 	}));
 });

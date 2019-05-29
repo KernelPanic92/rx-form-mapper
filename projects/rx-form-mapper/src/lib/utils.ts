@@ -13,6 +13,11 @@ export function filter<T>(value: ArrayLike<T>, callback: (value: T, index: numbe
 	return Array.from(value).filter(callback);
 }
 
+export function find<T>(value: ArrayLike<T>, callback: (value: T, index: number, obj: T[]) => boolean): T | undefined {
+	if (isNil(value)) return void 0;
+	return Array.from(value).find(callback);
+}
+
 export function size<T>(value: ArrayLike<T>): number {
 	if (isNil(value)) return 0;
 	return Array.from(value).length;

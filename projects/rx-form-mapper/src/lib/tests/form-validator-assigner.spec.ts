@@ -92,7 +92,7 @@ describe('FormValidatorAssignerService', () => {
 		class TestClass {
 			@AsyncValidator(NotProvidedService, 'notProvidedMethod')
 			@FormControl()
-			public field: String;
+			public field: string;
 		}
 
 		expect(() => writer.writeFormGroup(TestClass, new TestClass())).toThrow();
@@ -103,7 +103,7 @@ describe('FormValidatorAssignerService', () => {
 		class TestClass {
 			@AsyncValidator(TestService, 'notProvidedMethod' as any)
 			@FormControl()
-			public field: String;
+			public field: string;
 		}
 
 		expect(() => writer.writeFormGroup(TestClass, new TestClass())).toThrow();
@@ -114,7 +114,7 @@ describe('FormValidatorAssignerService', () => {
 		class TestClass {
 			@AsyncValidator(TestService, 'validatorFactoryMethod')
 			@FormControl()
-			public field: String;
+			public field: string;
 		}
 
 		expect(() => writer.writeFormGroup(TestClass, new TestClass())).toThrow();
@@ -125,7 +125,7 @@ describe('FormValidatorAssignerService', () => {
 		class TestClass {
 			@AsyncValidator(TestService, 'validatorFactoryMethod')
 			@FormControl()
-			public field: String;
+			public field: string;
 		}
 
 		expect(() => writer.writeFormGroup(TestClass, new TestClass())).toThrow();
@@ -136,7 +136,7 @@ describe('FormValidatorAssignerService', () => {
 		class TestClass {
 			@AsyncValidator(TestService, 'validatorFactoryMethod')
 			@FormControl()
-			public field: String;
+			public field: string;
 		}
 
 		writer.writeFormGroup(TestClass, new TestClass());
@@ -147,7 +147,7 @@ describe('FormValidatorAssignerService', () => {
 		class TestClass {
 			@AsyncValidator(TestService, 'validatorFactoryMethod', ['customParameterValue'])
 			@FormControl()
-			public field: String;
+			public field: string;
 		}
 
 		spyOn(service, 'validatorFactoryMethod').and.callFake(value => {

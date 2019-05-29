@@ -2,11 +2,12 @@ import { AsyncValidatorDescriptor } from '../descriptors/async-validator-descrip
 import { FieldDescriptor } from '../descriptors/field-descriptor';
 import { ValidatorDescriptor } from '../descriptors/validator-descriptor';
 import { Class } from '../types';
-import { filter, isNil } from '../utils';
+import { filter, find, isNil } from '../utils';
+
 declare const global;
 declare const window;
-export class FormMapperStore {
 
+export class FormMapperStore {
 	public static getInstance(): FormMapperStore {
 		const formMapperStoreKey = 'FormMapperStore';
 		const store = typeof(window) === undefined ? window : global;

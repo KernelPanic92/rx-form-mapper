@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { AbstractControl, FormArray, FormControl, FormGroup } from '@angular/forms';
+import { RxFormMapperConverter } from '../classes/rx-form-mapper-converter';
 import { EFieldType, FieldDescriptor } from '../descriptors/field-descriptor';
 import { FormMapperStore } from '../store/form-mapper-store';
 import { Class } from '../types';
@@ -24,7 +25,7 @@ export class RxFormReaderService {
 		return map(form.controls, control => this.readFormGroup(type, control as FormGroup));
 	}
 
-	public readFormGroup<T>(type: Class<T>, form: FormGroup): T {
+	public readFormGroup<T>(type: Class<T>, form: AbstractControl): T {
 		if (isNil(form)) { return void 0; }
 		if (! (form instanceof FormGroup)) {
 			throw new Error(`unexpected [${this.getClassName(form)}] at [${type.name || type.constructor.name}]`);
@@ -44,6 +45,11 @@ export class RxFormReaderService {
 			fieldValue = this.readFormGroup(fieldDescriptor.clazz, control);
 		} else if (control instanceof FormArray && fieldDescriptor.fieldType === EFieldType.FORM_GROUP && fieldDescriptor.isArray) {
 			fieldValue = this.readFormArray(fieldDescriptor.clazz, control);
+		} else if (fieldDescriptor.fieldType === EFieldType.CUSTOM_CONVERTER) {
+			const converterType = fieldDescriptor.converterFn ? fieldDescriptor.converterFn() : undefined;
+			if (isNil(converterType)) throw new Error(`unexpected type '${converterType}' at '${fieldDescriptor.propertyName}'`);
+			const converterInstance: RxFormMapperConverter<any> = new (converterType as any)();
+			fieldValue = converterInstance.toModel(fieldDescriptor.clazz, control);
 		} else {
 			const expected = fieldDescriptor.isArray && fieldDescriptor.fieldType === EFieldType.FORM_GROUP ? 'FORM_ARRAY' : fieldDescriptor.fieldType;
 			throw new Error(`unexpected [${this.getClassName(control)}] at '${fieldDescriptor.propertyName}' in [${fieldDescriptor.target.name}]. Expected ${expected}`);

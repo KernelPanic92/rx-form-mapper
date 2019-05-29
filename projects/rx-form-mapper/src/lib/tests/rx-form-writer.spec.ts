@@ -1,12 +1,15 @@
 import { inject, TestBed } from '@angular/core/testing';
 import {
+	AbstractControl,
 	FormArray as RxFormArray,
 	FormControl as RxFormControl,
 	FormGroup as RxFormGroup,
 	Validators
 } from '@angular/forms';
-import { FormControl, FormGroup, RxFormMapperModule } from '..';
+import { FormControl, FormGroup, RxFormMapperConverter, RxFormMapperModule } from '..';
+import { Converter } from '../decorators/converter.decorator';
 import { RxFormWriterService } from '../services/rx-form-writer.service';
+import { Class } from '../types';
 
 describe('RxFormWriter', () => {
 	beforeEach(() => {
@@ -133,5 +136,71 @@ describe('RxFormWriter', () => {
 		testValue.fields[0].field = 'test';
 		const form = writer.writeFormGroup(TestClass, testValue);
 		expect((form.get('fields') as RxFormArray).controls[0].get('field').value).toEqual('test');
+	}));
+
+	it('should be converted with custom converter', inject([RxFormWriterService], (writer: RxFormWriterService) => {
+
+		class TestCustomConverterClass {
+			public name: string;
+		}
+
+		class CustomConverter extends RxFormMapperConverter<TestCustomConverterClass> {
+			public toModel(type: Class<TestCustomConverterClass>, abstractControl: AbstractControl): TestCustomConverterClass {
+				const returnObj = new TestCustomConverterClass();
+				returnObj.name = abstractControl.value;
+				return returnObj;
+			}
+
+			public toForm(type: Class<TestCustomConverterClass>, value: TestCustomConverterClass): AbstractControl {
+				return new RxFormControl(value ? value.name : undefined);
+			}
+		}
+
+		class TestClass {
+			@Converter(() => CustomConverter)
+			public field: TestCustomConverterClass;
+		}
+
+		const testValue = new TestClass();
+		testValue.field = new TestCustomConverterClass();
+		testValue.field.name = 'test';
+
+		const form = writer.writeFormGroup(TestClass, testValue);
+		expect(form.get('field') instanceof RxFormControl).toBeTruthy();
+		expect(form.get('field').value).toEqual('test');
+	}));
+
+	it('should throw error on null converterFn', inject([RxFormWriterService], (writer: RxFormWriterService) => {
+
+		class TestCustomConverterClass {
+			public name: string;
+		}
+
+		class TestClass {
+			@Converter(null)
+			public field: TestCustomConverterClass;
+		}
+
+		const testValue = new TestClass();
+		testValue.field = new TestCustomConverterClass();
+		testValue.field.name = 'test';
+		expect(() =>  writer.writeFormGroup(TestClass, testValue)).toThrow();
+	}));
+
+	it('should throw error on null converterFn result', inject([RxFormWriterService], (writer: RxFormWriterService) => {
+
+		class TestCustomConverterClass {
+			public name: string;
+		}
+
+		class TestClass {
+			@Converter(() => null)
+			public field: TestCustomConverterClass;
+		}
+
+		const testValue = new TestClass();
+		testValue.field = new TestCustomConverterClass();
+		testValue.field.name = 'test';
+		expect(() =>  writer.writeFormGroup(TestClass, testValue)).toThrow();
 	}));
 });

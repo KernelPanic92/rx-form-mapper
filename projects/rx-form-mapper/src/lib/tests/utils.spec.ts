@@ -1,4 +1,4 @@
-import { filter, fromPairs, get, head, isNil, map, size, trim } from '../utils';
+import { filter, find, fromPairs, get, head, isNil, map, size, trim } from '../utils';
 
 describe('utils', () => {
 
@@ -25,6 +25,14 @@ describe('utils', () => {
 
 	it('filter should return filtered array', () => {
 		expect(filter([{name: 'name'}], n => n.name !== 'name')).toEqual([]);
+	});
+
+	it('find should return undefined', () => {
+		expect(find(null, n => true)).toEqual(undefined);
+	});
+
+	it('find should return element', () => {
+		expect(find([{name: 'name'}], n => n.name === 'name')).toEqual({name: 'name'});
 	});
 
 	it('size should return zero', () => {
