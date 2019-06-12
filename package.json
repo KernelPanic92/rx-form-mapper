@@ -1,6 +1,6 @@
 {
   "name": "rx-form-mapper",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Proper decorator-based transformation / serialization / deserialization of plain javascript classes to angular reactive forms",
   "author": {
     "email": "iacopociao1992@gmail.com",

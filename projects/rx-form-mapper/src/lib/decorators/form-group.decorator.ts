@@ -1,9 +1,9 @@
-import { isNil } from 'lodash';
 import 'reflect-metadata';
 import { EFieldType } from '../descriptors/field-descriptor';
 import { MetadataDesignTypes } from '../reflect-metadata-design-types';
 import { FormMapperStore } from '../store/form-mapper-store';
 import { Class } from '../types';
+import { isNil } from '../utils';
 
 export function FormGroup(): (target: Object, propertyName: string) => void;
 export function FormGroup(type: () => Class<any>): (target: Object, propertyName: string) => void;
