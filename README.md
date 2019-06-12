@@ -6,6 +6,8 @@
 [![codecov](https://codecov.io/gh/KernelPanic92/rx-form-mapper/branch/master/graph/badge.svg)](https://codecov.io/gh/KernelPanic92/rx-form-mapper)
 [![npm version](https://badge.fury.io/js/rx-form-mapper.svg)](https://badge.fury.io/js/rx-form-mapper)
 [![dependencies Status](https://david-dm.org/KernelPanic92/rx-form-mapper/status.svg)](https://david-dm.org/KernelPanic92/rx-form-mapper)
+[![NPM License](https://img.shields.io/npm/l/rx-form-mapper.svg)](https://img.shields.io/npm/l/rx-form-mapper.svg)
+[![NPM bundle size](https://img.shields.io/bundlephobia/min/rx-form-mapper.svg)](https://img.shields.io/bundlephobia/min/rx-form-mapper.svg)
 
 RxFormMapper is a framework developed for angular and allows you to convert, by annotation, classes into reactive form and vice versa.
 
@@ -61,6 +63,7 @@ export class User {
 
 import { Component } from '@angular/core';
 import { FormControl } from '@angular/forms';
+import { User } from 'src/app/models/user.model';
 
 @Component({
 	selector: 'app-user-editor',
@@ -71,7 +74,7 @@ export class UserEditorComponent {
 
 	public form: FormGroup;
 	constructor(rxFormMapper: RxFormMapper) {
-		this.form = rxFormMapper.writeForm(new User());
+		this.form = rxFormMapper.writeForm(User);
 	}
 }
 
@@ -119,6 +122,23 @@ export class MyComponent {
 }
 ```
 
+### Build your form
+
+```typescript
+import { RxFormMapper } from 'rx-form-mapper';
+import { Component } from '@angular/core';
+import { FormGroup } from '@angular/forms';
+import { User } from 'src/app/models/user.model';
+
+@Component({ ... })
+export class MyComponent { 
+	public myForm: FormGroup;
+	constructor(rxFormMapper: RxFormMapper) {
+		this.myForm = rxFormMapper.writeForm(User);
+	}
+}
+```
+
 ## Decorators
 
 ### @FormControl
@@ -126,6 +146,7 @@ export class MyComponent {
 If you want to expose some of properties as a FormControl, you can do it by @FormControl decorator
 
 ```typescript
+import { FormControl } from 'rx-form-mapper';
 
 export class User {
 
@@ -146,6 +167,7 @@ export class User {
 If you want to expose some of properties as a FormGroup, you can do it by @FormGroup decorator
 
 ```typescript
+import { FormGroup } from 'rx-form-mapper';
 
 export class Child {}
 
@@ -159,6 +181,14 @@ export class User {
 when a property of type array is annotated with formgroup, it will be converted into FormArray. In these cases it is necessary to specify the type of the array to @FormGroup decorator
 
 ```typescript
+import { FormControl, FormGroup } from 'rx-form-mapper';
+
+export class Phone {
+	@FormControl()
+	type: string;
+	@FormControl()
+	number: string;
+}
 
 export class User {
 
@@ -168,8 +198,8 @@ export class User {
 	@FormControl()
 	surname: string;
 	
-	@FormGroup(User)
-	children: User[];
+	@FormGroup(Phone)
+	phones: Phone[];
 }
 
 ```
@@ -179,6 +209,7 @@ export class User {
 If you want to set a validator on a model or property, you can do it by @Validator decorator
 
 ```typescript
+import { FormControl, Validator } from 'rx-form-mapper';
 
 export class User {
 
@@ -195,21 +226,17 @@ If you want to set an AsyncValidator on a model or property, you can do it by @A
 
 #### Service type and method factory name
 
+Declare your Angular service and method with AsyncValidatorFn result type
+
 ```typescript
-
-export class User {
-
-	@AsyncValidator(UserFormValidatorService, 'uniqueName')
-	@FormControl()
-	name: string;
-}
-
-
 @Injectable()
 export class UserFormValidatorService {
 
 	constructor(private readonly http: HttpProvider) {}
 
+	/**
+	 * My AsyncValidatorFn method
+	 */
 	public uniqueName(): AsyncValidatorFn {
 		return (control) => {
 			// implementation
@@ -219,8 +246,23 @@ export class UserFormValidatorService {
 
 ```
 
+And pass they as @AsyncValidator arguments
+
+```typescript
+import { FormControl, AsyncValidator } from 'rx-form-mapper';
+import { UserFormValidatorService } from 'src/app/services/user-form-validator.service';
+
+export class User {
+	@AsyncValidator(UserFormValidatorService, 'uniqueName')
+	@FormControl()
+	name: string;
+}
+
+```
+
 #### AsyncValidatorFunction instance
 
+Pass your AsyncValidator function as @AsyncValidator argument 
 ```typescript
 
 export class User {
