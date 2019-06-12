@@ -9,6 +9,7 @@ import { RxFormWriterService } from './rx-form-writer.service';
 export class RxFormMapper {
 	constructor(private readonly formWriter: RxFormWriterService, private readonly formReader: RxFormReaderService) {}
 
+	public writeForm<T>(clazz: Class<T>): FormGroup;
 	public writeForm<T>(value: T[]): FormArray;
 	public writeForm<T>(value: T): FormGroup;
 	public writeForm<T>(clazz: Class<T>, value: T[]): FormArray;
