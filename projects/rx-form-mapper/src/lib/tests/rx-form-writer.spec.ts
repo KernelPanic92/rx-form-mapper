@@ -6,8 +6,7 @@ import {
 	FormGroup as RxFormGroup,
 	Validators
 } from '@angular/forms';
-import { FormControl, FormGroup, RxFormMapperConverter, RxFormMapperModule } from '..';
-import { Converter } from '../decorators/converter.decorator';
+import { Converter, FormControl, FormGroup, RxFormMapperConverter, RxFormMapperModule } from '..';
 import { RxFormWriterService } from '../services/rx-form-writer.service';
 import { Class } from '../types';
 

@@ -1,13 +1,15 @@
 import { Injectable } from '@angular/core';
 import { inject, TestBed } from '@angular/core/testing';
 import {
+	AbstractControl,
 	ValidatorFn,
 	Validators
 } from '@angular/forms';
 import { of } from 'rxjs';
-import { AsyncValidator, FormControl, FormGroup, RxFormMapperModule, Validator } from '..';
+import { AsyncValidator, Converter, FormControl, FormGroup, RxFormMapperConverter, RxFormMapperModule, Validator } from '..';
 import { FormValidatorAssignerService } from '../services/form-validator-assigner.service';
 import { RxFormWriterService } from '../services/rx-form-writer.service';
+import { Class } from '../types';
 
 @Injectable()
 class TestService {
@@ -35,6 +37,25 @@ describe('FormValidatorAssignerService', () => {
 		}
 
 		expect(writer.writeFormGroup(TestClass, new TestClass()).validator).toEqual(Validators.required);
+	}));
+
+	it('should not set class validator when field is null', inject([RxFormWriterService], (writer: RxFormWriterService) => {
+		class CustomConverter extends RxFormMapperConverter<any> {
+			public toModel(type: Class<any>, abstractControl: AbstractControl) {
+				return null;
+			}
+			public toForm(typr: Class<any>, value: any): AbstractControl {
+				return null;
+			}
+		}
+
+		class TestClass {
+			@Validator(Validators.required)
+			@Converter(() => CustomConverter)
+			public field: string;
+		}
+
+		expect(writer.writeFormGroup(TestClass, new TestClass()).get('field')).toEqual(undefined);
 	}));
 
 	it('should set async class validator', inject([RxFormWriterService], (writer: RxFormWriterService) => {
