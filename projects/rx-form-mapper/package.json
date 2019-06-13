@@ -14,7 +14,7 @@
   "license": "MIT",
   "keywords": ["angular", "reactive-form", "mapper", "converter", "decorator-pattern", "typescript-library"],
   "peerDependencies": {
-    "@angular/common": "^7.1.0",
-    "@angular/core": "^7.1.0"
+    "@angular/common": "^7.1.0 || ^8.0.0",
+    "@angular/core": "^7.1.0 || ^8.0.0"
   }
 }
