@@ -42,7 +42,7 @@
     "@angular/router": "8.0.0",
     "core-js": "2.6.9",
     "rxjs": "6.3.3",
-    "tslib": "1.9.3",
+    "tslib": "1.10.0",
     "zone.js": "0.8.29"
   },
   "devDependencies": {
@@ -67,7 +67,7 @@
     "protractor": "5.4.2",
     "ts-node": "7.0.1",
     "tsickle": "0.35.0",
-    "tslib": "1.9.3",
+    "tslib": "1.10.0",
     "tslint": "5.17.0",
     "typescript": "3.4.5"
   }
