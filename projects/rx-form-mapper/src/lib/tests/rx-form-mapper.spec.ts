@@ -28,7 +28,7 @@ describe('RxFormMapper', () => {
 	}));
 
 	it('should recognize type', inject([RxFormMapper, RxFormWriterService], (mapper: RxFormMapper, writer: RxFormWriterService) => {
-		spyOn(writer, 'writeFormGroup').and.callFake(type => expect(type).toEqual(Number));
+		spyOn(writer, 'writeFormGroup').and.callFake(type => { expect(type).toEqual(Number); return null; });
 		mapper.writeForm(1);
 	}));
 

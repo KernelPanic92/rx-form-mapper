@@ -92,7 +92,7 @@ describe('FormValidatorAssignerService', () => {
 		class TestClass {
 			@AsyncValidator(NotProvidedService, 'notProvidedMethod')
 			@FormControl()
-			public field: String;
+			public field: string;
 		}
 
 		expect(() => writer.writeFormGroup(TestClass, new TestClass())).toThrow();
@@ -103,7 +103,7 @@ describe('FormValidatorAssignerService', () => {
 		class TestClass {
 			@AsyncValidator(TestService, 'notProvidedMethod' as any)
 			@FormControl()
-			public field: String;
+			public field: string;
 		}
 
 		expect(() => writer.writeFormGroup(TestClass, new TestClass())).toThrow();
@@ -114,18 +114,18 @@ describe('FormValidatorAssignerService', () => {
 		class TestClass {
 			@AsyncValidator(TestService, 'validatorFactoryMethod')
 			@FormControl()
-			public field: String;
+			public field: string;
 		}
 
 		expect(() => writer.writeFormGroup(TestClass, new TestClass())).toThrow();
 	}));
 
 	it('Should throw error on bad method factory result', inject([RxFormWriterService, TestService], (writer: RxFormWriterService, service: TestService) => {
-		spyOn(service, 'validatorFactoryMethod').and.returnValue(1);
+		spyOn(service, 'validatorFactoryMethod').and.returnValue(1 as any);
 		class TestClass {
 			@AsyncValidator(TestService, 'validatorFactoryMethod')
 			@FormControl()
-			public field: String;
+			public field: string;
 		}
 
 		expect(() => writer.writeFormGroup(TestClass, new TestClass())).toThrow();
@@ -136,10 +136,10 @@ describe('FormValidatorAssignerService', () => {
 		class TestClass {
 			@AsyncValidator(TestService, 'validatorFactoryMethod')
 			@FormControl()
-			public field: String;
+			public field: string;
 		}
-
-		writer.writeFormGroup(TestClass, new TestClass());
+		const form = writer.writeFormGroup(TestClass, new TestClass());
+		expect(form.get('field').asyncValidator).toBeTruthy();
 	}));
 
 	it('Should pass parameters into method factory', inject([RxFormWriterService, TestService], (writer: RxFormWriterService, service: TestService) => {
@@ -147,7 +147,7 @@ describe('FormValidatorAssignerService', () => {
 		class TestClass {
 			@AsyncValidator(TestService, 'validatorFactoryMethod', ['customParameterValue'])
 			@FormControl()
-			public field: String;
+			public field: string;
 		}
 
 		spyOn(service, 'validatorFactoryMethod').and.callFake(value => {

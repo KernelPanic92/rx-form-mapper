@@ -22,7 +22,7 @@ export class FormValidatorAssignerService {
 	}
 
 	private setValidators<T>(type: Class<T>, abstractControl: AbstractControl, fieldDescriptor?: FieldDescriptor) {
-		const control = fieldDescriptor ? abstractControl.get(fieldDescriptor.propertyName) : abstractControl;
+		const control = this.extractControl(abstractControl, fieldDescriptor);
 		if (isNil(control)) return;
 		const store = FormMapperStore.getInstance();
 		const validatorDescriptors = fieldDescriptor ? store.findPropertyValidators(type, fieldDescriptor.propertyName) : store.findClassValidators(type);
@@ -34,7 +34,8 @@ export class FormValidatorAssignerService {
 		control.setValidators(size(validators) > 1 ? validators : head(validators));
 	}
 
-	private setAsyncValidators<T>( type: Class<T>, control: AbstractControl, fieldDescriptor?: FieldDescriptor) {
+	private setAsyncValidators<T>( type: Class<T>, abstractControl: AbstractControl, fieldDescriptor?: FieldDescriptor) {
+		const control = this.extractControl(abstractControl, fieldDescriptor);
 		if (isNil(control)) return;
 		const store = FormMapperStore.getInstance();
 		const validatorDescriptors = fieldDescriptor ? store.findPropertyAsyncValidators(type, fieldDescriptor.propertyName) : store.findClassAsyncValidators(type);
@@ -64,4 +65,8 @@ export class FormValidatorAssignerService {
 		control.setAsyncValidators(size(validators) > 1 ? validators : head(validators));
 	}
 
+	private extractControl(control: AbstractControl, fieldDescriptor?: FieldDescriptor): AbstractControl {
+		if (!control) return void 0;
+		return fieldDescriptor ? control.get(fieldDescriptor.propertyName) : control;
+	}
 }
