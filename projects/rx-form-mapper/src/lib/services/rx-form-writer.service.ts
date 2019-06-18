@@ -37,9 +37,8 @@ export class RxFormWriterService {
 			control = this.writeFormGroup(FieldDescriptor.clazz, fieldValue);
 		} else if (fieldType === EFieldType.FORM_GROUP && FieldDescriptor.isArray) {
 			control = this.writeFormArray(FieldDescriptor.clazz, fieldValue);
-		} else {
-			throw new Error(`unexpected type at '${FieldDescriptor.propertyName}'`);
 		}
+
 		return [FieldDescriptor.propertyName, control];
 	}
 }
