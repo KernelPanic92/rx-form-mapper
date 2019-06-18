@@ -84,6 +84,30 @@ describe('FormValidatorAssignerService', () => {
 		expect(counterValidator2).toBeGreaterThan(0, 'validator 2');
 	}));
 
+	it('should add AsyncValidator in nested form group', inject([RxFormWriterService], (writer: RxFormWriterService) => {
+		let counterValidator1 = 0;
+		let counterValidator2 = 0;
+		const validator1 = control => { counterValidator1++; return of(null); };
+		const validator2 = control => { counterValidator2++; return of(null); };
+
+		@AsyncValidator(validator1)
+		class SubTestClass {
+			@FormControl()
+			public subField: string;
+		}
+
+		class TestClass {
+			@AsyncValidator(validator2)
+			@FormGroup()
+			public field: SubTestClass;
+		}
+
+		const form = writer.writeFormGroup(TestClass, new TestClass());
+		form.setValue({field: {subField: 'test'}});
+		expect(counterValidator1).toBeGreaterThan(0, 'validator 1');
+		expect(counterValidator2).toBeGreaterThan(0, 'validator 2');
+	}));
+
 	it('Should use only provided services', inject([RxFormWriterService], (writer: RxFormWriterService) => {
 		class NotProvidedService {
 			public notProvidedMethod(): ValidatorFn { return null; }
