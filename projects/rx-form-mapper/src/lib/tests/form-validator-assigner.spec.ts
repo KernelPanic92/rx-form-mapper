@@ -84,6 +84,30 @@ describe('FormValidatorAssignerService', () => {
 		expect(counterValidator2).toBeGreaterThan(0, 'validator 2');
 	}));
 
+	it('should add AsyncValidator in nested form group', inject([RxFormWriterService], (writer: RxFormWriterService) => {
+		let counterValidator1 = 0;
+		let counterValidator2 = 0;
+		const validator1 = control => { counterValidator1++; return of(null); };
+		const validator2 = control => { counterValidator2++; return of(null); };
+
+		@AsyncValidator(validator1)
+		class SubTestClass {
+			@FormControl()
+			public subField: string;
+		}
+
+		class TestClass {
+			@AsyncValidator(validator2)
+			@FormGroup()
+			public field: SubTestClass;
+		}
+
+		const form = writer.writeFormGroup(TestClass, new TestClass());
+		form.setValue({field: {subField: 'test'}});
+		expect(counterValidator1).toBeGreaterThan(0, 'validator 1');
+		expect(counterValidator2).toBeGreaterThan(0, 'validator 2');
+	}));
+
 	it('Should use only provided services', inject([RxFormWriterService], (writer: RxFormWriterService) => {
 		class NotProvidedService {
 			public notProvidedMethod(): ValidatorFn { return null; }
@@ -92,7 +116,7 @@ describe('FormValidatorAssignerService', () => {
 		class TestClass {
 			@AsyncValidator(NotProvidedService, 'notProvidedMethod')
 			@FormControl()
-			public field: String;
+			public field: string;
 		}
 
 		expect(() => writer.writeFormGroup(TestClass, new TestClass())).toThrow();
@@ -103,7 +127,7 @@ describe('FormValidatorAssignerService', () => {
 		class TestClass {
 			@AsyncValidator(TestService, 'notProvidedMethod' as any)
 			@FormControl()
-			public field: String;
+			public field: string;
 		}
 
 		expect(() => writer.writeFormGroup(TestClass, new TestClass())).toThrow();
@@ -114,18 +138,18 @@ describe('FormValidatorAssignerService', () => {
 		class TestClass {
 			@AsyncValidator(TestService, 'validatorFactoryMethod')
 			@FormControl()
-			public field: String;
+			public field: string;
 		}
 
 		expect(() => writer.writeFormGroup(TestClass, new TestClass())).toThrow();
 	}));
 
 	it('Should throw error on bad method factory result', inject([RxFormWriterService, TestService], (writer: RxFormWriterService, service: TestService) => {
-		spyOn(service, 'validatorFactoryMethod').and.returnValue(1);
+		spyOn(service, 'validatorFactoryMethod').and.returnValue(1 as any);
 		class TestClass {
 			@AsyncValidator(TestService, 'validatorFactoryMethod')
 			@FormControl()
-			public field: String;
+			public field: string;
 		}
 
 		expect(() => writer.writeFormGroup(TestClass, new TestClass())).toThrow();
@@ -136,10 +160,10 @@ describe('FormValidatorAssignerService', () => {
 		class TestClass {
 			@AsyncValidator(TestService, 'validatorFactoryMethod')
 			@FormControl()
-			public field: String;
+			public field: string;
 		}
-
-		writer.writeFormGroup(TestClass, new TestClass());
+		const form = writer.writeFormGroup(TestClass, new TestClass());
+		expect(form.get('field').asyncValidator).toBeTruthy();
 	}));
 
 	it('Should pass parameters into method factory', inject([RxFormWriterService, TestService], (writer: RxFormWriterService, service: TestService) => {
@@ -147,7 +171,7 @@ describe('FormValidatorAssignerService', () => {
 		class TestClass {
 			@AsyncValidator(TestService, 'validatorFactoryMethod', ['customParameterValue'])
 			@FormControl()
-			public field: String;
+			public field: string;
 		}
 
 		spyOn(service, 'validatorFactoryMethod').and.callFake(value => {
