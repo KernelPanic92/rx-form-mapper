@@ -46,9 +46,9 @@
     "zone.js": "0.10.2"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "0.803.7",
-    "@angular-devkit/build-ng-packagr": "0.803.7",
-    "@angular/cli": "8.3.7",
+    "@angular-devkit/build-angular": "0.803.12",
+    "@angular-devkit/build-ng-packagr": "0.803.12",
+    "@angular/cli": "8.3.12",
     "@types/jasmine": "3.3.13",
     "@types/jasminewd2": "2.0.6",
     "@types/node": "8.10.54",
