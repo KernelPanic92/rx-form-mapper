@@ -208,6 +208,8 @@ export class User {
 
 If you want to set a validator on a model or property, you can do it by @Validator decorator
 
+`@Validator` accepts all Angular validator types: `Validator`, `ValidatorFn`, `AsyncValidator`, `AsyncValidatorFn`
+
 ```typescript
 import { FormControl, Validator } from 'rx-form-mapper';
 
@@ -220,54 +222,84 @@ export class User {
 
 ```
 
-### @AsyncValidator
+#### Async validators
 
-If you want to set an AsyncValidator on a model or property, you can do it by @AsyncValidator decorator as parameters:
-
-#### Service type and method factory name
-
-Declare your Angular service and method with AsyncValidatorFn result type
+If you want to set an AsyncValidator on a model or property, you can do it passing additional 'async' parameter
 
 ```typescript
-@Injectable()
-export class UserFormValidatorService {
+import { FormControl, Validator } from 'rx-form-mapper';
 
-	constructor(private readonly http: HttpProvider) {}
-
-	/**
-	 * My AsyncValidatorFn method
-	 */
-	public uniqueName(): AsyncValidatorFn {
-		return (control) => {
-			// implementation
-		}
-	}
-}
-
-```
-
-And pass they as @AsyncValidator arguments
-
-```typescript
-import { FormControl, AsyncValidator } from 'rx-form-mapper';
-import { UserFormValidatorService } from 'src/app/services/user-form-validator.service';
+const asyncValidator = (control: AbstractControl) => return of(null);
 
 export class User {
-	@AsyncValidator(UserFormValidatorService, 'uniqueName')
+
+	@Validator(asyncValidator, 'async')
 	@FormControl()
 	name: string;
 }
 
 ```
 
-#### AsyncValidatorFunction instance
+#### Injectable validators
 
-Pass your AsyncValidator function as @AsyncValidator argument 
+Declare your validator class and decorate with `@Injectable`
+
 ```typescript
+import { AsyncValidator } from '@angular/forms';
+
+@Injectable()
+export class UniqueNameValidator implements AsyncValidator {
+
+	constructor(private readonly http: HttpProvider) {}
+
+	public validate(control: AbstractControl): Promise<ValidationErrors> | Observable<ValidationErrors> {
+		// implementation
+	}
+}
+
+```
+
+And pass it as @Validator argument
+
+```typescript
+import { FormControl, AsyncValidator } from 'rx-form-mapper';
+import { UniqueNameValidator } from 'src/app/validators/unique-Name.validator';
 
 export class User {
+	@Validator(UniqueNameValidator, 'async')
+	@FormControl()
+	name: string;
+}
 
-	@AsyncValidator(MyAsyncValidatorFn)
+```
+
+#### Additional data in injectable validators
+
+Declare your validator class and inject VALIDATOR_DATA token
+
+```typescript
+import { AsyncValidator } from '@angular/forms';
+
+@Injectable()
+export class UniqueNameValidator implements AsyncValidator {
+
+	constructor(private readonly http: HttpProvider, @Optional() @Inject(VALIDATOR_DATA) private readonly data: any) {}
+
+	public validate(control: AbstractControl): Promise<ValidationErrors> | Observable<ValidationErrors> {
+		// implementation
+	}
+}
+
+```
+
+And pass it as @Validator argument
+
+```typescript
+import { FormControl, AsyncValidator } from 'rx-form-mapper';
+import { UniqueNameValidator } from 'src/app/validators/unique-Name.validator';
+
+export class User {
+	@Validator(UniqueNameValidator, 'async', {excludedNames: ['John', 'Lucas']})
 	@FormControl()
 	name: string;
 }

@@ -1,24 +1,39 @@
-import { Injectable } from '@angular/core';
+import { Inject, Injectable, Optional } from '@angular/core';
 import { inject, TestBed } from '@angular/core/testing';
 import {
-	ValidatorFn,
+	AbstractControl,
+	AsyncValidator,
+	ValidationErrors,
+	Validator as AngularValidator,
 	Validators
 } from '@angular/forms';
-import { of } from 'rxjs';
-import { AsyncValidator, FormControl, FormGroup, RxFormMapperModule, Validator } from '..';
+import { Observable, of } from 'rxjs';
+import { FormControl, FormGroup, RxFormMapperModule, Validator } from '..';
 import { FormValidatorAssignerService } from '../services/form-validator-assigner.service';
 import { RxFormWriterService } from '../services/rx-form-writer.service';
+import { VALIDATOR_DATA } from '../tokens/validator-data-token';
 
 @Injectable()
-class TestService {
-	public validatorFactoryMethod(optionalParameter?: string): ValidatorFn { return (control) => null; }
+class ValidatorTest implements AngularValidator {
+	public validate(control: AbstractControl): ValidationErrors {
+		return null;
+	}
+}
+
+@Injectable()
+class AsyncValidatorTest implements AsyncValidator {
+	constructor(@Optional() @Inject(VALIDATOR_DATA) public readonly data: string) {}
+
+	public validate(control: AbstractControl): Promise<ValidationErrors> | Observable<ValidationErrors> {
+		return of(control.value !== this.data ? {error: true} : null);
+	}
 }
 
 describe('FormValidatorAssignerService', () => {
 	beforeEach(() => {
 		TestBed.configureTestingModule({
 			imports: [RxFormMapperModule],
-			providers: [TestService]
+			providers: [ValidatorTest, AsyncValidatorTest]
 		}).compileComponents();
 	});
 
@@ -34,19 +49,19 @@ describe('FormValidatorAssignerService', () => {
 			public field: string;
 		}
 
-		expect(writer.writeFormGroup(TestClass, new TestClass()).validator).toEqual(Validators.required);
+		expect(writer.writeFormGroup(TestClass, new TestClass()).validator).toBeTruthy();
 	}));
 
 	it('should set async class validator', inject([RxFormWriterService], (writer: RxFormWriterService) => {
-		const asyncValidator = control => of(null);
+		const asyncValidator: (control: AbstractControl) => Observable<any> = control => of(null);
 
-		@AsyncValidator(asyncValidator)
+		@Validator(asyncValidator, 'async')
 		class TestClass {
 			@FormControl()
 			public field: string;
 		}
 
-		expect(writer.writeFormGroup(TestClass, new TestClass()).asyncValidator).toEqual(asyncValidator);
+		expect(writer.writeFormGroup(TestClass, new TestClass()).asyncValidator).toBeTruthy();
 	}));
 
 	it('should set parameter validator', inject([RxFormWriterService], (writer: RxFormWriterService) => {
@@ -57,7 +72,7 @@ describe('FormValidatorAssignerService', () => {
 			public field: string;
 		}
 
-		expect(writer.writeFormGroup(TestClass, new TestClass()).get('field').validator).toEqual(Validators.required);
+		expect(writer.writeFormGroup(TestClass, new TestClass()).get('field').validator).toBeTruthy();
 	}));
 
 	it('should add validator in nested form group', inject([RxFormWriterService], (writer: RxFormWriterService) => {
@@ -90,14 +105,14 @@ describe('FormValidatorAssignerService', () => {
 		const validator1 = control => { counterValidator1++; return of(null); };
 		const validator2 = control => { counterValidator2++; return of(null); };
 
-		@AsyncValidator(validator1)
+		@Validator(validator1, 'async')
 		class SubTestClass {
 			@FormControl()
 			public subField: string;
 		}
 
 		class TestClass {
-			@AsyncValidator(validator2)
+			@Validator(validator2, 'async')
 			@FormGroup()
 			public field: SubTestClass;
 		}
@@ -108,77 +123,15 @@ describe('FormValidatorAssignerService', () => {
 		expect(counterValidator2).toBeGreaterThan(0, 'validator 2');
 	}));
 
-	it('Should use only provided services', inject([RxFormWriterService], (writer: RxFormWriterService) => {
-		class NotProvidedService {
-			public notProvidedMethod(): ValidatorFn { return null; }
-		}
+	it('Should pass parameters into injectable validator', inject([RxFormWriterService], async (writer: RxFormWriterService, service: AsyncValidatorTest) => {
 
 		class TestClass {
-			@AsyncValidator(NotProvidedService, 'notProvidedMethod')
-			@FormControl()
-			public field: string;
-		}
-
-		expect(() => writer.writeFormGroup(TestClass, new TestClass())).toThrow();
-	}));
-
-	it('Should throw error on undefined method', inject([RxFormWriterService], (writer: RxFormWriterService) => {
-
-		class TestClass {
-			@AsyncValidator(TestService, 'notProvidedMethod' as any)
-			@FormControl()
-			public field: string;
-		}
-
-		expect(() => writer.writeFormGroup(TestClass, new TestClass())).toThrow();
-	}));
-
-	it('Should throw error on undefined method factory result', inject([RxFormWriterService, TestService], (writer: RxFormWriterService, service: TestService) => {
-		spyOn(service, 'validatorFactoryMethod').and.returnValue(null);
-		class TestClass {
-			@AsyncValidator(TestService, 'validatorFactoryMethod')
-			@FormControl()
-			public field: string;
-		}
-
-		expect(() => writer.writeFormGroup(TestClass, new TestClass())).toThrow();
-	}));
-
-	it('Should throw error on bad method factory result', inject([RxFormWriterService, TestService], (writer: RxFormWriterService, service: TestService) => {
-		spyOn(service, 'validatorFactoryMethod').and.returnValue(1 as any);
-		class TestClass {
-			@AsyncValidator(TestService, 'validatorFactoryMethod')
-			@FormControl()
-			public field: string;
-		}
-
-		expect(() => writer.writeFormGroup(TestClass, new TestClass())).toThrow();
-	}));
-
-	it('Should add AsyncValidator with method factory', inject([RxFormWriterService, TestService], (writer: RxFormWriterService, service: TestService) => {
-
-		class TestClass {
-			@AsyncValidator(TestService, 'validatorFactoryMethod')
+			@Validator(AsyncValidatorTest, 'async', 'hello!')
 			@FormControl()
 			public field: string;
 		}
 		const form = writer.writeFormGroup(TestClass, new TestClass());
-		expect(form.get('field').asyncValidator).toBeTruthy();
+		form.get('field').setValue('hell0!');
+		expect(form.valid).toEqual(false);
 	}));
-
-	it('Should pass parameters into method factory', inject([RxFormWriterService, TestService], (writer: RxFormWriterService, service: TestService) => {
-
-		class TestClass {
-			@AsyncValidator(TestService, 'validatorFactoryMethod', ['customParameterValue'])
-			@FormControl()
-			public field: string;
-		}
-
-		spyOn(service, 'validatorFactoryMethod').and.callFake(value => {
-			expect(value).toEqual('customParameterValue');
-			return (control) => null;
-		});
-		writer.writeFormGroup(TestClass, new TestClass());
-	}));
-
 });
