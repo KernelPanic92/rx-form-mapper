@@ -1,4 +1,4 @@
-import { filter, fromPairs, get, head, isNil, map, size, trim } from '../utils';
+import { filter, fromPairs, get, head, isFunction, isNil, map, size, trim } from '../utils';
 
 describe('utils', () => {
 
@@ -74,5 +74,9 @@ describe('utils', () => {
 
 	it('get should return object with specific property', () => {
 		expect(fromPairs([['name', 'name']])).toEqual({name: 'name'});
+	});
+
+	it('isFunction should return true', () => {
+		expect(isFunction(() => null)).toBeTruthy();
 	});
 });

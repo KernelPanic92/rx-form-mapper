@@ -47,9 +47,20 @@ describe('FormValidatorAssignerService', () => {
 		expect(assigner).toBeTruthy();
 	}));
 
-	it('should set class validator', inject([RxFormWriterService], (writer: RxFormWriterService) => {
+	it('should set class validatorFn', inject([RxFormWriterService], (writer: RxFormWriterService) => {
 
 		@Validator(Validators.required)
+		class TestClass {
+			@FormControl()
+			public field: string;
+		}
+
+		expect(writer.writeFormGroup(TestClass, new TestClass()).validator).toBeTruthy();
+	}));
+
+	it('should set class validator', inject([RxFormWriterService], (writer: RxFormWriterService) => {
+
+		@Validator(ValidatorTest)
 		class TestClass {
 			@FormControl()
 			public field: string;

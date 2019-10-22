@@ -12,7 +12,6 @@ export class FormValidatorAssignerService {
 	constructor(private readonly injector: Injector) {}
 
 	public assignValidators<T>(type: Class<T>, form: FormGroup) {
-		if (isNil(form)) return;
 		this.setValidators(type, form);
 		FormMapperStore.getInstance().findClassFields(type)
 			.forEach(fieldDescriptor => {
@@ -22,7 +21,6 @@ export class FormValidatorAssignerService {
 
 	private setValidators<T>(type: Class<T>, abstractControl: AbstractControl, fieldDescriptor?: FieldDescriptor) {
 		const control = this.extractControl(abstractControl, fieldDescriptor);
-		if (isNil(control)) return;
 		const store = FormMapperStore.getInstance();
 		const validatorDescriptors = fieldDescriptor ? store.findPropertyValidators(type, fieldDescriptor.propertyName) : store.findClassValidators(type);
 		validatorDescriptors.forEach(v => this.setValidator(control, v));
@@ -51,7 +49,6 @@ export class FormValidatorAssignerService {
 	}
 
 	private extractControl(control: AbstractControl, fieldDescriptor?: FieldDescriptor): AbstractControl {
-		if (!control) return void 0;
 		return fieldDescriptor ? control.get(fieldDescriptor.propertyName) : control;
 	}
 }
