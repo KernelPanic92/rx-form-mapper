@@ -272,38 +272,3 @@ export class User {
 }
 
 ```
-
-#### Additional data in injectable validators
-
-Declare your validator class and inject VALIDATOR_DATA token
-
-`VALIDATOR_DATA requires @Optional() decorator to work`
-
-```typescript
-import { AsyncValidator } from '@angular/forms';
-
-@Injectable()
-export class UniqueNameValidator implements AsyncValidator {
-
-	constructor(private readonly http: HttpProvider, @Optional() @Inject(VALIDATOR_DATA) private readonly data: any) {}
-
-	public validate(control: AbstractControl): Promise<ValidationErrors> | Observable<ValidationErrors> {
-		// implementation
-	}
-}
-
-```
-
-And pass it as @Validator argument
-
-```typescript
-import { FormControl, AsyncValidator } from 'rx-form-mapper';
-import { UniqueNameValidator } from 'src/app/validators/unique-Name.validator';
-
-export class User {
-	@Validator(UniqueNameValidator, 'async', {excludedNames: ['John', 'Lucas']})
-	@FormControl()
-	name: string;
-}
-
-```

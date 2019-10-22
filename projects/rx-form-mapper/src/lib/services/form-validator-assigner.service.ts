@@ -5,7 +5,6 @@ import { ValidatorDescriptor } from '../descriptors/validator-descriptor';
 import { FormMapperStore } from '../store/form-mapper-store';
 import { Class } from '../types';
 import { isNil } from '../utils';
-import { ValidatorInjector } from './validator.injector';
 
 @Injectable()
 export class FormValidatorAssignerService {
@@ -47,11 +46,8 @@ export class FormValidatorAssignerService {
 
 	private buildValidator(validatorDescriptor: ValidatorDescriptor): Validator | ValidatorFn | AsyncValidator | AsyncValidatorFn {
 		if (validatorDescriptor.isFunction) return validatorDescriptor.validator as any;
-		const validatorInjector = new ValidatorInjector(this.injector, validatorDescriptor);
-		// tslint:disable-next-line: no-bitwise
-		const isInjectable = !isNil(validatorInjector.get(validatorDescriptor.validator as Type<any>, null, InjectFlags.Optional | InjectFlags.Self));
-
-		return isInjectable ? validatorInjector.get(validatorDescriptor.validator) : new (validatorDescriptor.validator as any)();
+		const validatorInstance = this.injector.get(validatorDescriptor.validator as Type<any>, null, InjectFlags.Optional);
+		return isNil(validatorInstance) ? new (validatorDescriptor.validator as Type<any>)() : validatorInstance;
 	}
 
 	private extractControl(control: AbstractControl, fieldDescriptor?: FieldDescriptor): AbstractControl {

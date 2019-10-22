@@ -11,10 +11,16 @@ import { Observable, of } from 'rxjs';
 import { FormControl, FormGroup, RxFormMapperModule, Validator } from '..';
 import { FormValidatorAssignerService } from '../services/form-validator-assigner.service';
 import { RxFormWriterService } from '../services/rx-form-writer.service';
-import { VALIDATOR_DATA } from '../tokens/validator-data-token';
 
 @Injectable()
+class AdditionalService {
+	public getValue() {
+		return 'hello!';
+	}
+}
+
 class ValidatorTest implements AngularValidator {
+
 	public validate(control: AbstractControl): ValidationErrors {
 		return null;
 	}
@@ -22,10 +28,10 @@ class ValidatorTest implements AngularValidator {
 
 @Injectable()
 class AsyncValidatorTest implements AsyncValidator {
-	constructor(@Optional() @Inject(VALIDATOR_DATA) public readonly data: string) {}
 
+	constructor(private readonly additionalService: AdditionalService) {}
 	public validate(control: AbstractControl): Promise<ValidationErrors> | Observable<ValidationErrors> {
-		return of(control.value !== this.data ? {error: true} : null);
+		return of(control.value === this.additionalService.getValue() ? undefined : {error: true});
 	}
 }
 
@@ -33,7 +39,7 @@ describe('FormValidatorAssignerService', () => {
 	beforeEach(() => {
 		TestBed.configureTestingModule({
 			imports: [RxFormMapperModule],
-			providers: [ValidatorTest, AsyncValidatorTest]
+			providers: [AsyncValidatorTest, AdditionalService]
 		}).compileComponents();
 	});
 
@@ -123,15 +129,15 @@ describe('FormValidatorAssignerService', () => {
 		expect(counterValidator2).toBeGreaterThan(0, 'validator 2');
 	}));
 
-	it('Should pass parameters into injectable validator', inject([RxFormWriterService], async (writer: RxFormWriterService, service: AsyncValidatorTest) => {
+	it('Should get injectable validator', inject([RxFormWriterService], async (writer: RxFormWriterService, service: AsyncValidatorTest) => {
 
 		class TestClass {
-			@Validator(AsyncValidatorTest, 'async', 'hello!')
+			@Validator(AsyncValidatorTest, 'async')
 			@FormControl()
 			public field: string;
 		}
 		const form = writer.writeFormGroup(TestClass, new TestClass());
-		form.get('field').setValue('hell0!');
-		expect(form.valid).toEqual(false);
+		form.get('field').setValue('hello!');
+		expect(form.valid).toEqual(true);
 	}));
 });

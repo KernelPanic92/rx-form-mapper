@@ -7,5 +7,4 @@ export interface ValidatorDescriptor {
 	propertyName?: string;
 	async: boolean;
 	isFunction: boolean;
-	data: any;
 }
