@@ -3,7 +3,6 @@ import { AbstractControl, AsyncValidator, AsyncValidatorFn, FormGroup, Validator
 import { FieldDescriptor } from '../descriptors/field-descriptor';
 import { ValidatorDescriptor } from '../descriptors/validator-descriptor';
 import { FormMapperStore } from '../store/form-mapper-store';
-import { Class } from '../types';
 import { isNil } from '../utils';
 
 @Injectable()
@@ -11,7 +10,7 @@ export class FormValidatorAssignerService {
 
 	constructor(private readonly injector: Injector) {}
 
-	public assignValidators<T>(type: Class<T>, form: FormGroup) {
+	public assignValidators<T>(type: Type<T>, form: FormGroup) {
 		this.setValidators(type, form);
 		FormMapperStore.getInstance().findClassFields(type)
 			.forEach(fieldDescriptor => {
@@ -19,7 +18,7 @@ export class FormValidatorAssignerService {
 			});
 	}
 
-	private setValidators<T>(type: Class<T>, abstractControl: AbstractControl, fieldDescriptor?: FieldDescriptor) {
+	private setValidators<T>(type: Type<T>, abstractControl: AbstractControl, fieldDescriptor?: FieldDescriptor) {
 		const control = this.extractControl(abstractControl, fieldDescriptor);
 		const store = FormMapperStore.getInstance();
 		const validatorDescriptors = fieldDescriptor ? store.findPropertyValidators(type, fieldDescriptor.propertyName) : store.findClassValidators(type);

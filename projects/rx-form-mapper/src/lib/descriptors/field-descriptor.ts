@@ -1,4 +1,4 @@
-import { Class } from '../types';
+import { Type } from '@angular/core';
 
 export enum EFieldType {
 	FORM_CONTROL = 'FORM_CONTROL',
@@ -9,6 +9,6 @@ export interface FieldDescriptor {
 	target: Function;
 	propertyName: string;
 	fieldType: EFieldType;
-	clazz: Class<any>;
+	clazz: Type<any>;
 	isArray: boolean;
 }

@@ -1,14 +1,13 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Type } from '@angular/core';
 import { AbstractControl, FormArray, FormControl, FormGroup } from '@angular/forms';
 import { EFieldType, FieldDescriptor } from '../descriptors/field-descriptor';
 import { FormMapperStore } from '../store/form-mapper-store';
-import { Class } from '../types';
 import { fromPairs, isNil, map } from '../utils';
 
 @Injectable()
 export class RxFormReaderService {
 
-	public readFormArray<T>(type: Class<T>, form: FormArray): T[] {
+	public readFormArray<T>(type: Type<T>, form: FormArray): T[] {
 		if (isNil(form)) {
 			return void 0;
 		}
@@ -24,7 +23,7 @@ export class RxFormReaderService {
 		return map(form.controls, control => this.readFormGroup(type, control as FormGroup));
 	}
 
-	public readFormGroup<T>(type: Class<T>, form: FormGroup): T {
+	public readFormGroup<T>(type: Type<T>, form: FormGroup): T {
 		if (isNil(form)) { return void 0; }
 		if (! (form instanceof FormGroup)) {
 			throw new Error(`unexpected [${this.getClassName(form)}] at [${type.name || type.constructor.name}]`);

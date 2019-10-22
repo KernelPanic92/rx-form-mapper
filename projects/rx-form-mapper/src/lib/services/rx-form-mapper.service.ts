@@ -1,6 +1,5 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Type } from '@angular/core';
 import { FormArray, FormGroup } from '@angular/forms';
-import { Class } from '../types';
 import { isNil } from '../utils';
 import { RxFormReaderService } from './rx-form-reader.service';
 import { RxFormWriterService } from './rx-form-writer.service';
@@ -9,12 +8,12 @@ import { RxFormWriterService } from './rx-form-writer.service';
 export class RxFormMapper {
 	constructor(private readonly formWriter: RxFormWriterService, private readonly formReader: RxFormReaderService) {}
 
-	public writeForm<T>(clazz: Class<T>): FormGroup;
+	public writeForm<T>(clazz: Type<T>): FormGroup;
 	public writeForm<T>(value: T[]): FormArray;
 	public writeForm<T>(value: T): FormGroup;
-	public writeForm<T>(clazz: Class<T>, value: T[]): FormArray;
-	public writeForm<T>(clazz: Class<T>, value: T): FormGroup;
-	public writeForm<T>(clazzOrValue: Class<T> | T | T[], value?: T | T[]): FormArray | FormGroup {
+	public writeForm<T>(clazz: Type<T>, value: T[]): FormArray;
+	public writeForm<T>(clazz: Type<T>, value: T): FormGroup;
+	public writeForm<T>(clazzOrValue: Type<T> | T | T[], value?: T | T[]): FormArray | FormGroup {
 		if (isNil(clazzOrValue)) throw new Error(`unexpected [${clazzOrValue}] type`);
 		const clazz = typeof(clazzOrValue) === 'function' ? clazzOrValue : Object.getPrototypeOf(clazzOrValue).constructor;
 		value = typeof(clazzOrValue) === 'function' ? value : clazzOrValue;
@@ -25,9 +24,9 @@ export class RxFormMapper {
 		}
 	}
 
-	public readForm<T>(clazz: Class<T>, form: FormGroup): T;
-	public readForm<T>(clazz: Class<T>, form: FormArray): T[];
-	public readForm<T>(clazz: Class<T>, form: FormArray | FormGroup): T | T[] {
+	public readForm<T>(clazz: Type<T>, form: FormGroup): T;
+	public readForm<T>(clazz: Type<T>, form: FormArray): T[];
+	public readForm<T>(clazz: Type<T>, form: FormArray | FormGroup): T | T[] {
 		if (form instanceof FormArray) {
 			return this.formReader.readFormArray(clazz, form);
 		} else {

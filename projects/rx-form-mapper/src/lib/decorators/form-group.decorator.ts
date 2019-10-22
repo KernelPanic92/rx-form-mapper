@@ -1,13 +1,13 @@
+import { Type } from '@angular/core';
 import 'reflect-metadata';
 import { EFieldType } from '../descriptors/field-descriptor';
 import { MetadataDesignTypes } from '../reflect-metadata-design-types';
 import { FormMapperStore } from '../store/form-mapper-store';
-import { Class } from '../types';
 import { isNil } from '../utils';
 
 export function FormGroup(): (target: Object, propertyName: string) => void;
-export function FormGroup(type: () => Class<any>): (target: Object, propertyName: string) => void;
-export function FormGroup(type?: () => Class<any>): (target: Object, propertyName: string) => void {
+export function FormGroup(type: () => Type<any>): (target: Object, propertyName: string) => void;
+export function FormGroup(type?: () => Type<any>): (target: Object, propertyName: string) => void {
 	return (target: Object, propertyName: string) => {
 		const reflectedType = Reflect.getMetadata(MetadataDesignTypes.TYPE, target, propertyName);
 		const isArray = reflectedType === Array;
