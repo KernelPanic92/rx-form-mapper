@@ -1,9 +1,9 @@
+import { Type } from '@angular/core';
 import { AsyncValidator, AsyncValidatorFn, Validator, ValidatorFn } from '@angular/forms';
-import { Class } from '../types';
 
 export interface ValidatorDescriptor {
 	target: Function;
-	validator: ValidatorFn | Class<Validator> | AsyncValidatorFn | Class<AsyncValidator>;
+	validator: ValidatorFn | Type<Validator> | AsyncValidatorFn | Type<AsyncValidator>;
 	propertyName?: string;
 	async: boolean;
 	isFunction: boolean;
