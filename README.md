@@ -277,6 +277,8 @@ export class User {
 
 Declare your validator class and inject VALIDATOR_DATA token
 
+`VALIDATOR_DATA requires @Optional() decorator to work`
+
 ```typescript
 import { AsyncValidator } from '@angular/forms';
 

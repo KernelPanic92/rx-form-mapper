@@ -1,5 +1,5 @@
 import { AsyncValidator, AsyncValidatorFn, Validator, ValidatorFn } from '@angular/forms';
-import { Class } from 'rx-form-mapper/lib/types';
+import { Class } from '../types';
 
 export interface ValidatorDescriptor {
 	target: Function;
