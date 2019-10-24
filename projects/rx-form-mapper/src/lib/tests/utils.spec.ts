@@ -66,13 +66,17 @@ describe('utils', () => {
 		expect(get({}, 'person.name')).toEqual(undefined);
 	});
 
-	it('get should return empty object', () => {
+	it('get should return default value', () => {
+		expect(get({}, 'person.name', 3)).toEqual(3);
+	});
+
+	it('fromPairs should return empty object', () => {
 		expect(fromPairs(null)).toEqual({});
 		expect(fromPairs(undefined)).toEqual({});
 		expect(fromPairs([])).toEqual({});
 	});
 
-	it('get should return object with specific property', () => {
+	it('fromPairs should return object with specific property', () => {
 		expect(fromPairs([['name', 'name']])).toEqual({name: 'name'});
 	});
 

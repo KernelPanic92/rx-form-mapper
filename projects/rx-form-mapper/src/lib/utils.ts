@@ -28,13 +28,13 @@ export function trim(value: string): string {
 	return value.trim();
 }
 
-export function get(value: any, path: string): any {
-	if (isNil(value)) return void 0;
+export function get(value: any, path: string, defaultValue?: any): any {
+	if (isNil(value)) return defaultValue;
 	if (isNil(path) || size(trim(path)) === 0) return value;
 	const steps = path.split('.');
 	let stepValue = value;
 	for (const step of steps) {
-		if (isNil(stepValue)) return stepValue;
+		if (isNil(stepValue)) return defaultValue;
 		stepValue = stepValue[step];
 	}
 
