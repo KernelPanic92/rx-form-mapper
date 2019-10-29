@@ -4,7 +4,7 @@ import {
 	FormControl as RxFormControl,
 	FormGroup as RxFormGroup
 } from '@angular/forms';
-import { FormControl, FormGroup, RxFormMapperModule } from '..';
+import { FormArray, FormControl, FormGroup, RxFormMapperModule } from '..';
 import { RxFormReaderService } from '../services/rx-form-reader.service';
 
 describe('RxFormReader', () => {
@@ -16,37 +16,6 @@ describe('RxFormReader', () => {
 
 	it('should be created', inject([RxFormReaderService], (reader: RxFormReaderService) => {
 		expect(reader).toBeTruthy();
-	}));
-
-	it('should read undefined', inject([RxFormReaderService], (reader: RxFormReaderService) => {
-		expect(reader.readFormGroup(null, null)).toBeUndefined();
-		expect(reader.readFormArray(null, null)).toBeUndefined();
-	}));
-
-	it('readFormGroup should accepts only FormGroup', inject([RxFormReaderService], (reader: RxFormReaderService) => {
-		expect(() => reader.readFormGroup(null, new RxFormArray([]) as any)).toThrowError();
-	}));
-
-	it('readFormArray should accepts only FormArray', inject([RxFormReaderService], (reader: RxFormReaderService) => {
-		expect(() => reader.readFormArray(null, new RxFormGroup({}) as any)).toThrowError();
-	}));
-
-	it('readFormArray should not accept array type', inject([RxFormReaderService], (reader: RxFormReaderService) => {
-		expect(() => reader.readFormArray(Array, new RxFormArray([]))).toThrowError();
-	}));
-
-	it('Should read FormArray', inject([RxFormReaderService], (reader: RxFormReaderService) => {
-		class TestClass {
-			@FormControl()
-			public name: string;
-		}
-
-		const formArray = new RxFormArray([
-			new RxFormGroup({ name: new RxFormControl('test') })
-		]);
-
-		const parsed = reader.readFormArray(TestClass, formArray);
-		expect(Array.isArray(parsed)).toBeTruthy();
 	}));
 
 	it('should return undefined when control not exists', inject([RxFormReaderService], (reader: RxFormReaderService) => {
@@ -103,7 +72,7 @@ describe('RxFormReader', () => {
 
 	it('should throw error when field is not FormArray', inject([RxFormReaderService], (reader: RxFormReaderService) => {
 		class TestClass {
-			@FormGroup(() => TestClass)
+			@FormArray(TestClass)
 			public field: TestClass[];
 		}
 
@@ -115,7 +84,7 @@ describe('RxFormReader', () => {
 		class TestClass {
 			@FormControl()
 			public name: string;
-			@FormGroup(() => TestClass)
+			@FormArray(TestClass)
 			public field: TestClass[];
 		}
 

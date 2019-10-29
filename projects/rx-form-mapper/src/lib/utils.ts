@@ -1,7 +1,7 @@
 export function isFunction(value: any): value is (...args: any[]) => any {
 	return typeof(value) === 'function';
 }
-export function isNil(value: any): boolean { return value == null; }
+export function isNil(value: any): value is null | undefined { return value == null; }
 
 export function map<T, V>(value: ArrayLike<T>, callback: (value: T, index: number, array: T[]) => V): V[] {
 	if (isNil(value)) return [];

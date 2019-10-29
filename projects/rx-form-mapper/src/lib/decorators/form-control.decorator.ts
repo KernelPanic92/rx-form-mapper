@@ -1,16 +1,15 @@
 import 'reflect-metadata';
-import { EFieldType } from '../descriptors/field-descriptor';
-import { MetadataDesignTypes } from '../reflect-metadata-design-types';
-import { FormMapperStore } from '../store/form-mapper-store';
+import { modelBinder } from './../bind/model-binder';
+import { FormControlDecoratorOpts } from './form-control-opts.decorator';
 
-export function FormControl(): (target: Object, propertyName: string) => void {
-	return (target: Object, propertyName: string) => {
-		FormMapperStore.getInstance().fields.push({
-			clazz: Reflect.getMetadata(MetadataDesignTypes.TYPE, target, propertyName),
-			propertyName,
-			target: target.constructor,
-			isArray: false,
-			fieldType: EFieldType.FORM_CONTROL
-		});
+export function FormControl(opts?: Partial<FormControlDecoratorOpts>): (target: any, propertyName: string) => void {
+	return (target: any, propertyName: string) => {
+		const defaultFormControlDecoratorOpts: FormControlDecoratorOpts = {
+			asyncValidators: [],
+			validators: []
+		};
+
+		const formControlDecoratorOpts: FormControlDecoratorOpts = Object.assign({}, defaultFormControlDecoratorOpts, opts);
+		modelBinder.bindFormControl(target, propertyName, formControlDecoratorOpts);
 	};
 }

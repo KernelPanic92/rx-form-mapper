@@ -1,24 +1,15 @@
-import { Type } from '@angular/core';
 import 'reflect-metadata';
-import { EFieldType } from '../descriptors/field-descriptor';
-import { MetadataDesignTypes } from '../reflect-metadata-design-types';
-import { FormMapperStore } from '../store/form-mapper-store';
-import { isNil } from '../utils';
+import { modelBinder } from '../bind/model-binder';
+import { FormGroupDecoratorOpts } from './form-group-opts.decorator';
 
-export function FormGroup(): (target: Object, propertyName: string) => void;
-export function FormGroup(type: () => Type<any>): (target: Object, propertyName: string) => void;
-export function FormGroup(type?: () => Type<any>): (target: Object, propertyName: string) => void {
-	return (target: Object, propertyName: string) => {
-		const reflectedType = Reflect.getMetadata(MetadataDesignTypes.TYPE, target, propertyName);
-		const isArray = reflectedType === Array;
-		const clazz = isNil(type) ? reflectedType : type();
+export function FormGroup(opts?: Partial<FormGroupDecoratorOpts>): (target: any, propertyName: string) => void {
+	return (target: any, propertyName: string) => {
+		const defaultFormGroupDecoratorOpts: FormGroupDecoratorOpts = {
+			asyncValidators: [],
+			validators: []
+		};
+		const formGroupDecoratorOpts: FormGroupDecoratorOpts = Object.assign({}, defaultFormGroupDecoratorOpts, opts);
 
-		FormMapperStore.getInstance().fields.push({
-			clazz,
-			propertyName,
-			target: target.constructor,
-			isArray,
-			fieldType: EFieldType.FORM_GROUP
-		});
+		modelBinder.bindFormGroup(target, propertyName, formGroupDecoratorOpts);
 	};
 }
