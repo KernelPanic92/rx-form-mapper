@@ -1,10 +1,13 @@
+import { Type } from '@angular/core';
 import { inject, TestBed } from '@angular/core/testing';
 import {
+	AbstractControl,
+	AbstractControlOptions,
 	FormArray as RxFormArray,
 	FormControl as RxFormControl,
 	FormGroup as RxFormGroup,
 } from '@angular/forms';
-import { FormArray, FormControl, FormGroup, RxFormMapperModule } from '..';
+import { CustomControl, CustomControlMapper, FormArray, FormControl, FormGroup, RxFormMapperModule } from '..';
 import { RxFormWriterService } from '../services/rx-form-writer.service';
 
 describe('RxFormWriter', () => {
@@ -111,5 +114,44 @@ describe('RxFormWriter', () => {
 		testValue.fields[0].field = 'test';
 		const form = writer.writeModel(testValue, TestClass);
 		expect((form.get('fields') as RxFormArray).controls[0].get('field').value).toEqual('test');
+	}));
+
+	it('should throw null custom value', inject([RxFormWriterService], (writer: RxFormWriterService) => {
+
+		class ChildTestClass {
+			public field: string;
+		}
+
+		class TestClass {
+			@CustomControl(null)
+			public field: ChildTestClass;
+		}
+
+		expect(() => writer.writeModel(new TestClass(), TestClass)).toThrow();
+	}));
+
+	it('should write CustomControl value', inject([RxFormWriterService], (writer: RxFormWriterService) => {
+
+		class ChildTestClass {
+			public field: string;
+		}
+
+		class CustomControlMapperTest implements CustomControlMapper {
+			public writeForm(value: ChildTestClass, type: Type<any>, abstractControlOptions: AbstractControlOptions): AbstractControl {
+				return new RxFormControl(value, abstractControlOptions);
+			}
+
+			public readForm(control: AbstractControl, type: Type<any>): ChildTestClass {
+				return control.value;
+			}
+		}
+
+		class TestClass {
+			@CustomControl(CustomControlMapperTest)
+			public field: ChildTestClass;
+		}
+
+		const form = writer.writeModel(new TestClass(), TestClass);
+		expect(form.get('field') instanceof RxFormControl).toBeTruthy();
 	}));
 });

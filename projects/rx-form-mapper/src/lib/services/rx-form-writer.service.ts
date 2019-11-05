@@ -55,6 +55,10 @@ export class RxFormWriterService {
 		} else if (propertyMetadata.type === ControlType.FORM_ARRAY) {
 			const controls = isNil(value) ? [] : (value as Array<any>).map(item => this.writeModel(item, propertyMetadata.propertyGenericArgumentType));
 			abstractControl = new FormArray(controls, abstractControlOptions);
+		} else if (propertyMetadata.type === ControlType.CUSTOM) {
+			if (isNil(propertyMetadata.customMapper)) throw new Error('undefined custom mapper');
+			const customMapper = new propertyMetadata.customMapper();
+			abstractControl = customMapper.writeForm(value, propertyMetadata.propertyType, abstractControlOptions);
 		}
 
 		return abstractControl;

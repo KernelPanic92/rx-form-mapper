@@ -41,7 +41,12 @@ export class RxFormReaderService {
 		} else if (fieldMetadata.type === ControlType.FORM_ARRAY) {
 			if (!(abstractControl instanceof FormArray)) throw new Error('controller is not FormArray instance');
 			fieldValue = abstractControl.controls.map(fg => this.readFormGroup(fg as FormGroup, fieldMetadata.propertyGenericArgumentType));
+		} else if (fieldMetadata.type === ControlType.CUSTOM) {
+			if (isNil(fieldMetadata.customMapper)) throw new Error('undefined custom mapper');
+			const customMapper = new fieldMetadata.customMapper();
+			fieldValue = customMapper.readForm(abstractControl, fieldMetadata.propertyType);
 		}
+
 		return fieldValue;
 	}
 }

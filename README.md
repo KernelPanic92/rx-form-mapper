@@ -250,6 +250,45 @@ export class User {
 
 ```
 
+### @CustomControl
+
+If you want to create custom forms for specific fields, you can do it by @CustomControl decorator
+
+Declare your custom mapper class implementing `CustomControlMapper` interface
+
+```typescript
+import { CustomControlMapper } from 'rx-form-mapper';
+import { AbstractControlOptions, FormControl } from '@angular/forms';
+
+export class CustomAuthorControlMapper implements CustomControlMapper {
+
+	public writeForm(value: any, type: Type<any>, abstractControlOptions: AbstractControlOptions): AbstractControl {
+		return new FormControl(value, abstractControlOptions);
+	}
+
+	public readForm(control: AbstractControl, type: Type<any>): ChildTestClass {
+		return control.value;
+	}
+
+}
+```
+
+And pass it's type as argument of CustomControl decorator
+
+
+```typescript
+import { Form } from 'rx-form-mapper';
+import { CustomAuthorControlMapper } from '.';
+
+export class Post {
+
+	@CustomControl(CustomAuthorControlMapper)
+	author: Person;
+
+}
+
+```
+
 ## Validators
 
 If you want to set a validator on a class or a property, you can do it by specifying `validators` option to `@Form`, `@FormControl`,`@FormGroup` or `@FormArray` decorators
