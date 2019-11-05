@@ -63,7 +63,7 @@
     "@angular/compiler-cli": "8.2.11",
     "@angular/language-service": "8.2.11",
     "karma-spec-reporter": "0.0.32",
-    "ng-packagr": "5.7.0",
+    "ng-packagr": "5.7.1",
     "protractor": "5.4.2",
     "ts-node": "8.4.1",
     "tsickle": "0.37.0",
