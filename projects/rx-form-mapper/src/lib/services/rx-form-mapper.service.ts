@@ -1,5 +1,5 @@
 import { Injectable, Type } from '@angular/core';
-import { FormArray, FormGroup } from '@angular/forms';
+import { FormGroup } from '@angular/forms';
 import { isNil } from '../utils';
 import { RxFormReaderService } from './rx-form-reader.service';
 import { RxFormWriterService } from './rx-form-writer.service';
@@ -8,29 +8,16 @@ import { RxFormWriterService } from './rx-form-writer.service';
 export class RxFormMapper {
 	constructor(private readonly formWriter: RxFormWriterService, private readonly formReader: RxFormReaderService) {}
 
-	public writeForm<T>(clazz: Type<T>): FormGroup;
-	public writeForm<T>(value: T[]): FormArray;
 	public writeForm<T>(value: T): FormGroup;
-	public writeForm<T>(clazz: Type<T>, value: T[]): FormArray;
-	public writeForm<T>(clazz: Type<T>, value: T): FormGroup;
-	public writeForm<T>(clazzOrValue: Type<T> | T | T[], value?: T | T[]): FormArray | FormGroup {
-		if (isNil(clazzOrValue)) throw new Error(`unexpected [${clazzOrValue}] type`);
-		const clazz = typeof(clazzOrValue) === 'function' ? clazzOrValue : Object.getPrototypeOf(clazzOrValue).constructor;
-		value = typeof(clazzOrValue) === 'function' ? value : clazzOrValue;
-		if (Array.isArray(value)) {
-			return this.formWriter.writeFormArray(clazz, value);
-		} else {
-			return this.formWriter.writeFormGroup(clazz, value);
-		}
+	public writeForm<T>(value: T, type: Type<T>): FormGroup;
+	public writeForm<T>(value: T, type?: Type<T>): FormGroup {
+		if (isNil(value) && isNil(type)) throw new Error('type cannot be inferred implicitly');
+		const valueType = isNil(type) ? Object.getPrototypeOf(value).constructor : type;
+
+		return this.formWriter.writeModel(value, valueType);
 	}
 
-	public readForm<T>(clazz: Type<T>, form: FormGroup): T;
-	public readForm<T>(clazz: Type<T>, form: FormArray): T[];
-	public readForm<T>(clazz: Type<T>, form: FormArray | FormGroup): T | T[] {
-		if (form instanceof FormArray) {
-			return this.formReader.readFormArray(clazz, form);
-		} else {
-			return this.formReader.readFormGroup(clazz, form);
-		}
+	public readForm<T>(form: FormGroup, type: Type<T> ): T {
+		return this.formReader.readFormGroup(form, type);
 	}
 }

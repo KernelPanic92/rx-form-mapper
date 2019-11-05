@@ -1,16 +1,10 @@
 import 'reflect-metadata';
-import { EFieldType } from '../descriptors/field-descriptor';
-import { MetadataDesignTypes } from '../reflect-metadata-design-types';
-import { FormMapperStore } from '../store/form-mapper-store';
+import { modelBinder } from './../bind/model-binder';
+import { AbstractControlOpts } from './abstract-control-opts';
 
-export function FormControl(): (target: Object, propertyName: string) => void {
-	return (target: Object, propertyName: string) => {
-		FormMapperStore.getInstance().fields.push({
-			clazz: Reflect.getMetadata(MetadataDesignTypes.TYPE, target, propertyName),
-			propertyName,
-			target: target.constructor,
-			isArray: false,
-			fieldType: EFieldType.FORM_CONTROL
-		});
+export function FormControl(opts?: AbstractControlOpts): (target: any, propertyName: string) => void {
+	return (target: any, propertyName: string) => {
+
+		modelBinder.bindFormControl(target, propertyName, opts);
 	};
 }

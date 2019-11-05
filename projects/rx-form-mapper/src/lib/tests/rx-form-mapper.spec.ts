@@ -1,11 +1,7 @@
 import { inject, TestBed } from '@angular/core/testing';
-import {
-	FormArray as RxFormArray,
-	FormGroup as RxFormGroup
-} from '@angular/forms';
-import { FormControl, RxFormMapperModule } from '..';
-import { RxFormMapper } from '../services/rx-form-mapper.service';
-import { RxFormWriterService } from '../services/rx-form-writer.service';
+import { FormGroup } from '@angular/forms';
+import { RxFormMapperModule } from '..';
+import { RxFormMapper } from '../services';
 
 describe('RxFormMapper', () => {
 	beforeEach(() => {
@@ -14,58 +10,38 @@ describe('RxFormMapper', () => {
 		}).compileComponents();
 	});
 
-	it('should be created', inject([RxFormMapper], (mapper: RxFormMapper) => {
-		expect(mapper).toBeTruthy();
+	it('should be created', inject([RxFormMapper], (formMapper: RxFormMapper) => {
+		expect(formMapper).toBeTruthy();
 	}));
 
-	it('should not write unspecified type', inject([RxFormMapper], (mapper: RxFormMapper) => {
-		expect(() => mapper.writeForm(null)).toThrow();
-		expect(() => mapper.writeForm(null, [])).toThrow();
+	it('writeForm should not detect type', inject([RxFormMapper], (formMapper: RxFormMapper) => {
+		expect(() => formMapper.writeForm(null)).toThrow();
 	}));
 
-	it('should not read unspecified type', inject([RxFormMapper], (mapper: RxFormMapper) => {
-		expect(() => mapper.readForm(null, new RxFormGroup({}))).toThrow();
-	}));
+	it('writeForm should auto detect type', inject([RxFormMapper], (formMapper: RxFormMapper) => {
+		class Test {
 
-	it('should recognize type', inject([RxFormMapper, RxFormWriterService], (mapper: RxFormMapper, writer: RxFormWriterService) => {
-		spyOn(writer, 'writeFormGroup').and.callFake(type => { expect(type).toEqual(Number); return null; });
-		mapper.writeForm(1);
-	}));
-
-	it('should return FormGroup', inject([RxFormMapper], (mapper: RxFormMapper) => {
-		class TestClass {
-			@FormControl()
-			public field: string;
 		}
-		expect(mapper.writeForm(new TestClass()) instanceof RxFormGroup).toBeTruthy();
+		expect(formMapper.writeForm(new Test())).toBeTruthy();
 	}));
 
-	it('should return FormArray', inject([RxFormMapper], (mapper: RxFormMapper) => {
-		class TestClass {
-			@FormControl()
-			public field: string;
+	it('writeForm should write with specific type', inject([RxFormMapper], (formMapper: RxFormMapper) => {
+		class Test {
+
 		}
-		expect(mapper.writeForm(TestClass, [new TestClass()]) instanceof RxFormArray).toBeTruthy();
+		expect(formMapper.writeForm(new Test(), Test)).toBeTruthy();
 	}));
 
-	it('should return object', inject([RxFormMapper], (mapper: RxFormMapper) => {
-		class TestClass {
-			@FormControl()
-			public field: string;
+	it('readForm should return null', inject([RxFormMapper], (formMapper: RxFormMapper) => {
+		class Test {
+
 		}
 
-		const form = new RxFormGroup({});
-		expect(mapper.readForm(TestClass, form) instanceof TestClass).toBeTruthy();
+		expect(formMapper.readForm(null, Test)).toBeUndefined();
 	}));
 
-	it('should return array', inject([RxFormMapper], (mapper: RxFormMapper) => {
-		class TestClass {
-			@FormControl()
-			public field: string;
-		}
+	it('readForm should not detect type', inject([RxFormMapper], (formMapper: RxFormMapper) => {
 
-		const form = new RxFormArray([]);
-		expect(mapper.readForm(TestClass, form) instanceof Array).toBeTruthy();
+		expect(() => formMapper.readForm(new FormGroup({}), null)).toThrow();
 	}));
-
 });
