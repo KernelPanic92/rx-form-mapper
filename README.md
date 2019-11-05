@@ -320,5 +320,21 @@ export class User {
 	})
 	name: string;
 }
+```
 
+## Validation strategy
+
+Sometimes you want to change the default strategy of form validation, you can do it specifying `updateOn` option to `@Form`, `@FormControl`,`@FormGroup` or `@FormArray` decorators
+
+```typescript
+import { FormControl, AsyncValidator } from 'rx-form-mapper';
+import { UniqueNameValidator } from 'src/app/validators/unique-Name.validator';
+
+export class User {
+	@FormControl({
+		validators: Validators.required,
+		updateOn: 'blur'
+	})
+	name: string;
+}
 ```
