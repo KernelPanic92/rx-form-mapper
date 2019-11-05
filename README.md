@@ -134,9 +134,39 @@ import { User } from 'src/app/models/user.model';
 export class MyComponent { 
 	public myForm: FormGroup;
 	constructor(rxFormMapper: RxFormMapper) {
-		this.myForm = rxFormMapper.writeForm(User);
+		this.myForm = rxFormMapper.writeForm(new User());
 	}
 }
+```
+
+## Modules
+
+### RxFormMapperModule
+
+This module enables RxFormMapper features
+
+## Services
+
+### RxFormMapper
+
+This service provides the methods to serialize and deserialize our objects
+
+## Methods
+
+### writeForm
+
+This method converts our class instance into reactive form instance
+
+```typescript
+this.form = formMapper.writeForm(new Post());
+```
+
+### readForm
+
+This method converts our form instance into specific class instance
+
+```typescript
+const post: Post = formMapper.readForm(this.form, Post);
 ```
 
 ## Decorators
@@ -178,18 +208,34 @@ export class User {
 
 ```
 
-when a property of type array is annotated with formgroup, it will be converted into FormArray. In these cases it is necessary to specify the type of the array to @FormGroup decorator
+### @FormArray
+
+If you want to expose some of properties as a FormArray, you can do it by @FormArray decorator
 
 ```typescript
-import { FormControl, FormGroup } from 'rx-form-mapper';
+import { FormGroup } from 'rx-form-mapper';
 
-export class Phone {
-	@FormControl()
-	type: string;
-	@FormControl()
-	number: string;
+export class Child {}
+
+export class User {
+	@FormArray(Child)
+	children: Child[];
 }
 
+```
+
+When you're trying to serialize a property into FormArray its required to known what type of object you are trying to convert. 
+
+### @FormControl
+
+If you want to add extra data to your form, you can do it by optional @Form decorator
+
+```typescript
+import { Form } from 'rx-form-mapper';
+
+@Form({
+	validators: Validators.required
+})
 export class User {
 
 	@FormControl()
@@ -197,52 +243,55 @@ export class User {
 
 	@FormControl()
 	surname: string;
-	
-	@FormGroup(Phone)
-	phones: Phone[];
+
+	@FormControl()
+	age: number;
 }
 
 ```
 
-### @Validator
+## Validators
 
-If you want to set a validator on a model or property, you can do it by @Validator decorator
-
-`@Validator` accepts all Angular validator types: `Validator`, `ValidatorFn`, `AsyncValidator`, `AsyncValidatorFn`
+If you want to set a validator on a class or a property, you can do it by specifying `validators` option to `@Form`, `@FormControl`,`@FormGroup` or `@FormArray` decorators
 
 ```typescript
 import { FormControl, Validator } from 'rx-form-mapper';
 
 export class User {
 
-	@Validator(Validators.required)
-	@FormControl()
-	name: string;
+	@FormControl({
+		validators: Validators.required
+	})
+	completeName: string;
 }
 
 ```
 
-#### Async validators
+## Async validators
 
-If you want to set an AsyncValidator on a model or property, you can do it passing additional 'async' parameter
+If you want to set an AsyncValidator on a class or a property, you can do it by specifying `asyncValidators` option to `@Form`, `@FormControl`,`@FormGroup` or `@FormArray` decorators
 
 ```typescript
 import { FormControl, Validator } from 'rx-form-mapper';
 
-const asyncValidator = (control: AbstractControl) => return of(null);
+const asyncValidator = (control: AbstractControl) => return of(undefined);
 
 export class User {
 
-	@Validator(asyncValidator, 'async')
-	@FormControl()
+
+	@FormControl({
+		asyncValidators: asyncValidator
+	})
 	name: string;
 }
 
 ```
 
-#### Injectable validators
+## Injectable validators
 
-Declare your validator class and decorate with `@Injectable`
+Sometimes you want to injects other services into your validator or asyncValidator, RxFormMapper allows you to do it simple with Angular Forms interfaces:
+
+Declare your validator class implementing `Validator` or `AsyncValidator` interfaces, decorate with `@Injectable` and includes it in a module as a normal service.
 
 ```typescript
 import { AsyncValidator } from '@angular/forms';
@@ -259,15 +308,16 @@ export class UniqueNameValidator implements AsyncValidator {
 
 ```
 
-And pass it as @Validator argument
+And pass it's type as validator or asyncValidator option
 
 ```typescript
 import { FormControl, AsyncValidator } from 'rx-form-mapper';
 import { UniqueNameValidator } from 'src/app/validators/unique-Name.validator';
 
 export class User {
-	@Validator(UniqueNameValidator, 'async')
-	@FormControl()
+	@FormControl({
+		asyncValidators: UniqueNameValidator
+	})
 	name: string;
 }
 
