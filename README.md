@@ -302,6 +302,7 @@ export class User {
 		validators: Validators.required
 	})
 	completeName: string;
+
 }
 
 ```
@@ -322,6 +323,7 @@ export class User {
 		asyncValidators: asyncValidator
 	})
 	name: string;
+
 }
 
 ```
@@ -343,6 +345,7 @@ export class UniqueNameValidator implements AsyncValidator {
 	public validate(control: AbstractControl): Promise<ValidationErrors> | Observable<ValidationErrors> {
 		// implementation
 	}
+
 }
 
 ```
@@ -354,10 +357,12 @@ import { FormControl, AsyncValidator } from 'rx-form-mapper';
 import { UniqueNameValidator } from 'src/app/validators/unique-Name.validator';
 
 export class User {
+
 	@FormControl({
 		asyncValidators: UniqueNameValidator
 	})
 	name: string;
+
 }
 ```
 
@@ -370,10 +375,12 @@ import { FormControl, AsyncValidator } from 'rx-form-mapper';
 import { UniqueNameValidator } from 'src/app/validators/unique-Name.validator';
 
 export class User {
+
 	@FormControl({
 		validators: Validators.required,
 		updateOn: 'blur'
 	})
 	name: string;
+
 }
 ```
