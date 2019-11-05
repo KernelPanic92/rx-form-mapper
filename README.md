@@ -226,7 +226,7 @@ export class User {
 
 When you're trying to serialize a property into FormArray its required to known what type of object you are trying to convert. 
 
-### @FormControl
+### @Form
 
 If you want to add extra data to your form, you can do it by optional @Form decorator
 
