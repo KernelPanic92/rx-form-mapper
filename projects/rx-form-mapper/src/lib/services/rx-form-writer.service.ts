@@ -1,67 +1,77 @@
 import { Injectable, InjectFlags, Injector, Type } from '@angular/core';
-import { AbstractControl, AsyncValidator, AsyncValidatorFn, FormArray, FormControl, FormGroup, Validator, ValidatorFn} from '@angular/forms';
-import { EFieldType } from '../bind';
+import { AbstractControl, AsyncValidator, AsyncValidatorFn, FormArray, FormControl, FormGroup, Validator, ValidatorFn } from '@angular/forms';
+import { ValidatorMetadata } from './../bind/validator-metadata';
+
+import { ControlType } from '../bind';
 import { PropertyMetadata } from '../bind/property-metadata';
 import { get, isNil } from '../utils';
 import { modelBinder } from './../bind/model-binder';
 
+interface AbstractControlOptions {
+	validators: ValidatorFn[];
+	asyncValidators: AsyncValidatorFn[];
+	updateOn?: 'change' | 'blur' | 'submit';
+}
 @Injectable()
 export class RxFormWriterService {
 
 	constructor(private readonly injector: Injector) {}
 
-	public writeModel<T>(type: Type<T>, model: T): FormGroup {
+	public writeModel<T>( value: T, type: Type<T>, parentAbstractControlOptions?: AbstractControlOptions): FormGroup {
 		if (isNil(type)) throw new Error('type must be specified');
+
 		const metadata = modelBinder.getMetadata(type);
+		let abstractControlOptions = this.buildAbstractControlOptions(metadata);
+		abstractControlOptions = this.mergeAbstractControlOptions(abstractControlOptions, parentAbstractControlOptions);
+
 		const fieldsMetadata: {[name: string]: PropertyMetadata} = metadata.properties;
 		const fieldKeys = Object.keys(fieldsMetadata);
 		const fields: { [name: string]: AbstractControl } = {};
 		for (const fieldKey of fieldKeys) {
-			const fieldInitialValue = get(model, fieldKey);
+			const fieldInitialValue = get(value, fieldKey);
 			const fieldMetadata = fieldsMetadata[fieldKey];
 			fields[fieldKey] = this.writeProperty(fieldMetadata, fieldInitialValue);
 		}
-		const formGroup = new FormGroup(fields);
-		this.setValidators(formGroup, metadata.validators, metadata.asyncValidators);
+		const formGroup = new FormGroup(fields, abstractControlOptions);
 		return formGroup;
 	}
 
+	private mergeAbstractControlOptions(abstractControlOptions: AbstractControlOptions, parentAbstractControlOptions: AbstractControlOptions): AbstractControlOptions {
+		if (!parentAbstractControlOptions) return Object.assign({}, abstractControlOptions);
+		return {
+			asyncValidators: [...abstractControlOptions.asyncValidators, ...parentAbstractControlOptions.asyncValidators],
+			validators: [...abstractControlOptions.validators, ...parentAbstractControlOptions.validators],
+			updateOn: isNil(parentAbstractControlOptions.updateOn) ? abstractControlOptions.updateOn : parentAbstractControlOptions.updateOn
+		};
+	}
+
 	private writeProperty(propertyMetadata: PropertyMetadata, value: any): AbstractControl {
+		const abstractControlOptions = this.buildAbstractControlOptions(propertyMetadata);
 		let abstractControl: AbstractControl;
-		if (propertyMetadata.fieldType === EFieldType.FORM_CONTROL) {
-			abstractControl = new FormControl(value);
-		} else if (propertyMetadata.fieldType === EFieldType.FORM_GROUP) {
-			abstractControl = this.writeModel(propertyMetadata.propertyType, value);
-		} else if (propertyMetadata.fieldType === EFieldType.FORM_ARRAY) {
-			const controls = isNil(value) ? [] : (value as Array<any>).map(item => this.writeModel(propertyMetadata.propertyGenericArgumentType, item));
-			abstractControl = new FormArray(controls);
+		if (propertyMetadata.type === ControlType.FORM_CONTROL) {
+			abstractControl = new FormControl(value, abstractControlOptions);
+		} else if (propertyMetadata.type === ControlType.FORM_GROUP) {
+			abstractControl = this.writeModel(value, propertyMetadata.propertyType, abstractControlOptions);
+		} else if (propertyMetadata.type === ControlType.FORM_ARRAY) {
+			const controls = isNil(value) ? [] : (value as Array<any>).map(item => this.writeModel(item, propertyMetadata.propertyGenericArgumentType));
+			abstractControl = new FormArray(controls, abstractControlOptions);
 		}
-		this.setValidators(abstractControl, propertyMetadata.validators, propertyMetadata.asyncValidators);
+
 		return abstractControl;
 	}
 
-	private setValidators(abstractControl: AbstractControl, validators: (Type<Validator> | ValidatorFn)[], AsyncValidators: (Type<AsyncValidator> | AsyncValidatorFn)[]) {
-		const controlValidators = validators.map(v => this.buildValidator(v));
-		const existingValidator = abstractControl.validator;
-		if (existingValidator) {
-			controlValidators.push(existingValidator);
-		}
-		abstractControl.setValidators(controlValidators);
-
-		const controlAsyncValidators = AsyncValidators.map(v => this.buildAsyncValidator(v));
-		const existingAsyncValidator = abstractControl.asyncValidator;
-
-		if (existingAsyncValidator) {
-			controlAsyncValidators.push(existingAsyncValidator);
-		}
-
-		abstractControl.setAsyncValidators(controlAsyncValidators);
+	private buildAbstractControlOptions(metadata: ValidatorMetadata): AbstractControlOptions {
+		return {
+			validators: metadata.validators.map(v => this.buildValidator(v)),
+			asyncValidators: metadata.asyncValidators.map(v => this.buildAsyncValidator(v)),
+			updateOn: metadata.updateOn
+		};
 	}
 
 	private buildValidator(validator: ValidatorFn | Type<Validator>): any {
 		if (!this.isValidatorType(validator)) return validator;
 		let validatorInstance = this.injector.get(validator, null, InjectFlags.Optional);
-		validatorInstance = validatorInstance == null ? new validator() : validatorInstance;
+		validatorInstance = isNil(validatorInstance) ? new validator() : validatorInstance;
 
 		return (c: AbstractControl) => validatorInstance.validate(c);
 	}
@@ -69,7 +79,7 @@ export class RxFormWriterService {
 	private buildAsyncValidator(validator: AsyncValidatorFn | Type<AsyncValidator>): AsyncValidatorFn {
 		if (!this.isAsyncValidatorType(validator)) return validator;
 		let validatorInstance = this.injector.get(validator, null, InjectFlags.Optional);
-		validatorInstance = validatorInstance == null ? new validator() : validatorInstance;
+		validatorInstance = isNil(validatorInstance) ? new validator() : validatorInstance;
 		return (c: AbstractControl) => validatorInstance.validate(c);
 	}
 

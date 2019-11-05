@@ -25,7 +25,7 @@ describe('RxFormReader', () => {
 		}
 
 		const formGroup = new RxFormGroup({});
-		expect(reader.readFormGroup(TestClass, formGroup).field).toBeUndefined();
+		expect(reader.readFormGroup(formGroup, TestClass).field).toBeUndefined();
 	}));
 
 	it('should throw error when field is not FormControl', inject([RxFormReaderService], (reader: RxFormReaderService) => {
@@ -35,7 +35,7 @@ describe('RxFormReader', () => {
 		}
 
 		const formGroup = new RxFormGroup({field: new RxFormGroup({})});
-		expect(() => reader.readFormGroup(TestClass, formGroup)).toThrow();
+		expect(() => reader.readFormGroup(formGroup, TestClass)).toThrow();
 	}));
 
 	it('should read FormControl field', inject([RxFormReaderService], (reader: RxFormReaderService) => {
@@ -45,7 +45,7 @@ describe('RxFormReader', () => {
 		}
 
 		const formGroup = new RxFormGroup({field: new RxFormControl('test')});
-		expect(reader.readFormGroup(TestClass, formGroup).field).toEqual('test');
+		expect(reader.readFormGroup(formGroup, TestClass).field).toEqual('test');
 	}));
 
 	it('should throw error when field is not FormGroup', inject([RxFormReaderService], (reader: RxFormReaderService) => {
@@ -55,7 +55,7 @@ describe('RxFormReader', () => {
 		}
 
 		const formGroup = new RxFormGroup({field: new RxFormControl({})});
-		expect(() => reader.readFormGroup(TestClass, formGroup)).toThrow();
+		expect(() => reader.readFormGroup(formGroup, TestClass)).toThrow();
 	}));
 
 	it('should read FormGroup field', inject([RxFormReaderService], (reader: RxFormReaderService) => {
@@ -67,7 +67,7 @@ describe('RxFormReader', () => {
 		}
 
 		const formGroup = new RxFormGroup({field: new RxFormGroup({name: new RxFormControl('test')})});
-		expect(reader.readFormGroup(TestClass, formGroup).field.name).toEqual('test');
+		expect(reader.readFormGroup(formGroup, TestClass).field.name).toEqual('test');
 	}));
 
 	it('should throw error when field is not FormArray', inject([RxFormReaderService], (reader: RxFormReaderService) => {
@@ -77,7 +77,7 @@ describe('RxFormReader', () => {
 		}
 
 		const formGroup = new RxFormGroup({field: new RxFormControl({})});
-		expect(() => reader.readFormGroup(TestClass, formGroup)).toThrow();
+		expect(() => reader.readFormGroup(formGroup, TestClass)).toThrow();
 	}));
 
 	it('should read FormArray field', inject([RxFormReaderService], (reader: RxFormReaderService) => {
@@ -89,6 +89,6 @@ describe('RxFormReader', () => {
 		}
 
 		const formGroup = new RxFormGroup({field: new RxFormArray([new RxFormGroup({name: new RxFormControl('test')})])});
-		expect(reader.readFormGroup(TestClass, formGroup).field[0].name).toEqual('test');
+		expect(reader.readFormGroup(formGroup, TestClass).field[0].name).toEqual('test');
 	}));
 });

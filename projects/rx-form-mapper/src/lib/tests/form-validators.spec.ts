@@ -8,8 +8,8 @@ import {
 	Validators as AngularValidators
 } from '@angular/forms';
 import { Observable, of } from 'rxjs';
-import { AsyncValidators, FormControl, FormGroup, RxFormMapperModule, Validators } from '..';
-import { RxFormWriterService } from '../services/rx-form-writer.service';
+import { Form, FormControl, FormGroup, RxFormMapperModule } from '..';
+import { RxFormWriterService } from '../services';
 
 @Injectable()
 class AdditionalService {
@@ -44,46 +44,46 @@ describe('FormValidatorAssignerService', () => {
 
 	it('should set class validatorFn', inject([RxFormWriterService], (writer: RxFormWriterService) => {
 
-		@Validators(AngularValidators.required)
+		@Form({validators: AngularValidators.required})
 		class TestClass {
 			@FormControl()
 			public field: string;
 		}
 
-		expect(writer.writeModel(TestClass, new TestClass()).validator).toBeTruthy();
+		expect(writer.writeModel(new TestClass(), TestClass).validator).toBeTruthy();
 	}));
 
 	it('should set class validator', inject([RxFormWriterService], (writer: RxFormWriterService) => {
 
-		@Validators(ValidatorTest)
+		@Form({validators: ValidatorTest})
 		class TestClass {
 			@FormControl()
 			public field: string;
 		}
 
-		expect(writer.writeModel(TestClass, new TestClass()).validator).toBeTruthy();
+		expect(writer.writeModel(new TestClass(), TestClass).validator).toBeTruthy();
 	}));
 
 	it('should set async class validator', inject([RxFormWriterService], (writer: RxFormWriterService) => {
 		const asyncValidator: (control: AbstractControl) => Observable<any> = control => of(null);
 
-		@AsyncValidators(asyncValidator)
+		@Form({asyncValidators: asyncValidator})
 		class TestClass {
 			@FormControl()
 			public field: string;
 		}
 
-		expect(writer.writeModel(TestClass, new TestClass()).asyncValidator).toBeTruthy();
+		expect(writer.writeModel( new TestClass(), TestClass).asyncValidator).toBeTruthy();
 	}));
 
 	it('should set parameter validator', inject([RxFormWriterService], (writer: RxFormWriterService) => {
 
 		class TestClass {
-			@FormControl({validators: [AngularValidators.required]})
+			@FormControl({validators: AngularValidators.required})
 			public field: string;
 		}
 
-		expect(writer.writeModel(TestClass, new TestClass()).get('field').validator).toBeTruthy();
+		expect(writer.writeModel(new TestClass(), TestClass).get('field').validator).toBeTruthy();
 	}));
 
 	it('should add validator in nested form group', inject([RxFormWriterService], (writer: RxFormWriterService) => {
@@ -92,18 +92,18 @@ describe('FormValidatorAssignerService', () => {
 		const validator1 = control => { counterValidator1++; return undefined; };
 		const validator2 = control => { counterValidator2++; return undefined; };
 
-		@Validators(validator1)
+		@Form({validators: [validator1]})
 		class SubTestClass {
 			@FormControl()
 			public subField: string;
 		}
 
 		class TestClass {
-			@FormGroup({validators: [validator2]})
+			@FormGroup({validators: validator2})
 			public field: SubTestClass;
 		}
 
-		const form = writer.writeModel(TestClass, new TestClass());
+		const form = writer.writeModel(new TestClass(), TestClass);
 		form.setValue({field: {subField: 'test'}});
 		expect(counterValidator1).toBeGreaterThan(0, 'validator 1');
 		expect(counterValidator2).toBeGreaterThan(0, 'validator 2');
@@ -115,18 +115,18 @@ describe('FormValidatorAssignerService', () => {
 		const validator1 = control => { counterValidator1++; return of(null); };
 		const validator2 = control => { counterValidator2++; return of(null); };
 
-		@AsyncValidators(validator1)
+		@Form({asyncValidators: validator1})
 		class SubTestClass {
 			@FormControl()
 			public subField: string;
 		}
 
 		class TestClass {
-			@FormGroup({asyncValidators: [validator2]})
+			@FormGroup({asyncValidators: validator2})
 			public field: SubTestClass;
 		}
 
-		const form = writer.writeModel(TestClass, new TestClass());
+		const form = writer.writeModel(new TestClass(), TestClass);
 		form.setValue({field: {subField: 'test'}});
 		expect(counterValidator1).toBeGreaterThan(0, 'validator 1');
 		expect(counterValidator2).toBeGreaterThan(0, 'validator 2');
@@ -135,10 +135,10 @@ describe('FormValidatorAssignerService', () => {
 	it('Should get injectable validator', inject([RxFormWriterService, AdditionalService], async (writer: RxFormWriterService, service: AsyncValidatorTest) => {
 
 		class TestClass {
-			@FormControl({asyncValidators: [AsyncValidatorTest]})
+			@FormControl({asyncValidators: AsyncValidatorTest})
 			public field: string;
 		}
-		const form = writer.writeModel(TestClass, new TestClass());
+		const form = writer.writeModel( new TestClass(), TestClass);
 		form.get('field').setValue('hello!');
 		expect(form.valid).toEqual(true);
 	}));

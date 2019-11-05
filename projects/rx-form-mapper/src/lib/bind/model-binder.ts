@@ -1,8 +1,9 @@
 import { Type } from '@angular/core';
 import { AsyncValidator, AsyncValidatorFn, Validator, ValidatorFn } from '@angular/forms';
 import 'reflect-metadata';
-import { EFieldType, MetadataDesignTypes, ModelMetadata } from '.';
-import { FormArrayDecoratorOpts, FormControlDecoratorOpts, FormGroupDecoratorOpts } from '../decorators';
+import { ControlType, MetadataDesignTypes, ModelMetadata } from '.';
+import { coerceArray, get } from '../utils';
+import { AbstractControlOpts } from './../decorators/abstract-control-opts';
 
 class ModelBinder {
 
@@ -18,58 +19,49 @@ class ModelBinder {
 		return Object.assign({}, defaultModelDescriptor, reflectedMetadata);
 	}
 
-	public bindFormControl(target: {constructor: Type<any>}, propertyName: string, decorator: FormControlDecoratorOpts): void {
-		const metadata: ModelMetadata = this.getMetadata(target.constructor);
-
-		metadata.properties[propertyName] = {
-			asyncValidators: decorator.asyncValidators,
-			validators: decorator.validators,
-			propertyType: Reflect.getMetadata(MetadataDesignTypes.TYPE, target, propertyName),
-			fieldType: EFieldType.FORM_CONTROL
-		};
-
-		this.setMetadata(target.constructor, metadata);
-	}
-
-	public bindFormGroup(target: {constructor: Type<any>}, propertyName: string, decorator: FormGroupDecoratorOpts): void {
-		const metadata: ModelMetadata = this.getMetadata(target.constructor);
-
-		metadata.properties[propertyName] = {
-			asyncValidators: decorator.asyncValidators || [],
-			validators: decorator.validators || [],
-			propertyType: Reflect.getMetadata(MetadataDesignTypes.TYPE, target, propertyName),
-			fieldType: EFieldType.FORM_GROUP
-		};
-
-		this.setMetadata(target.constructor, metadata);
-	}
-
-	public bindFormArray(target: {constructor: Type<any>}, propertyName: string, decorator: FormArrayDecoratorOpts): void {
-		const metadata: ModelMetadata = this.getMetadata(target.constructor);
-
-		metadata.properties[propertyName] = {
-			asyncValidators: decorator.asyncValidators,
-			validators: decorator.validators,
-			propertyType: Reflect.getMetadata(MetadataDesignTypes.TYPE, target, propertyName),
-			propertyGenericArgumentType: decorator.type,
-			fieldType: EFieldType.FORM_ARRAY
-		};
-
-		this.setMetadata(target.constructor, metadata);
-	}
-
-	public bindValidators(target: Type<any>, validators: (Type<Validator> | ValidatorFn)[]): void {
+	public bindForm(target: Type<any>, opts: AbstractControlOpts) {
 		const metadata: ModelMetadata = this.getMetadata(target);
-
-		metadata.validators = [...metadata.validators, ...validators];
-
+		metadata.asyncValidators = coerceArray(get(opts, 'asyncValidators', []));
+		metadata.validators = coerceArray(get(opts, 'validators', []));
+		metadata.updateOn = get(opts, 'updateOn');
 		this.setMetadata(target, metadata);
 	}
 
-	public bindAsyncValidators(target: Type<any>, validators: (Type<AsyncValidator> | AsyncValidatorFn)[]): void {
-		const metadata: ModelMetadata = this.getMetadata(target);
-		metadata.asyncValidators = [...metadata.asyncValidators, ...validators];
-		this.setMetadata(target, metadata);
+	public bindFormControl(target: {constructor: Type<any>}, propertyName: string, opts?: AbstractControlOpts): void {
+		this.bindFormControlOrGroup(target, propertyName, ControlType.FORM_CONTROL, opts);
+	}
+
+	public bindFormGroup(target: {constructor: Type<any>}, propertyName: string, opts?: AbstractControlOpts): void {
+		this.bindFormControlOrGroup(target, propertyName, ControlType.FORM_GROUP, opts);
+	}
+
+	public bindFormArray(target: {constructor: Type<any>}, propertyName: string, opts: AbstractControlOpts): void {
+		const metadata: ModelMetadata = this.getMetadata(target.constructor);
+
+		metadata.properties[propertyName] = {
+			asyncValidators: coerceArray(get(opts, 'asyncValidators', [])),
+			validators: coerceArray(get(opts, 'validators', [])),
+			propertyType: Reflect.getMetadata(MetadataDesignTypes.TYPE, target, propertyName),
+			propertyGenericArgumentType: get(opts, 'type'),
+			type: ControlType.FORM_ARRAY,
+			updateOn: get(opts, 'updateOn', void 0)
+		};
+
+		this.setMetadata(target.constructor, metadata);
+	}
+
+	private bindFormControlOrGroup(target: {constructor: Type<any>}, propertyName: string, controlType: ControlType.FORM_CONTROL | ControlType.FORM_GROUP, opts?: AbstractControlOpts): void {
+		const metadata: ModelMetadata = this.getMetadata(target.constructor);
+
+		metadata.properties[propertyName] = {
+			asyncValidators: coerceArray(get(opts, 'asyncValidators', [])),
+			validators: coerceArray(get(opts, 'validators', [])),
+			propertyType: get(opts, 'type', Reflect.getMetadata(MetadataDesignTypes.TYPE, target, propertyName)),
+			type: controlType,
+			updateOn: get(opts, 'updateOn', void 0)
+		};
+
+		this.setMetadata(target.constructor, metadata);
 	}
 
 	private setMetadata(target: Type<any>, metadata: ModelMetadata) {

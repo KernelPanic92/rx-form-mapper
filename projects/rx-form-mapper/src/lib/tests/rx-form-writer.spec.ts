@@ -24,7 +24,7 @@ describe('RxFormWriter', () => {
 
 	it('writeModel should return FormGroup', inject([RxFormWriterService], (writer: RxFormWriterService) => {
 		class TestClass {}
-		expect(writer.writeModel(TestClass, null) instanceof RxFormGroup).toBeTruthy();
+		expect(writer.writeModel(null, TestClass) instanceof RxFormGroup).toBeTruthy();
 	}));
 
 	it('should write FormControl field', inject([RxFormWriterService], (writer: RxFormWriterService) => {
@@ -32,7 +32,7 @@ describe('RxFormWriter', () => {
 			@FormControl()
 			public field: string;
 		}
-		const form = writer.writeModel(TestClass, new TestClass());
+		const form = writer.writeModel(new TestClass(), TestClass);
 		expect(form.get('field') instanceof RxFormControl).toBeTruthy();
 	}));
 
@@ -43,7 +43,7 @@ describe('RxFormWriter', () => {
 		}
 		const testValue = new TestClass();
 		testValue.field = 'test';
-		expect(writer.writeModel(TestClass, testValue).get('field').value).toEqual('test');
+		expect(writer.writeModel(testValue, TestClass).get('field').value).toEqual('test');
 	}));
 
 	it('should write FormGroup field', inject([RxFormWriterService], (writer: RxFormWriterService) => {
@@ -58,7 +58,7 @@ describe('RxFormWriter', () => {
 			public field: ChildTestClass;
 		}
 
-		expect(writer.writeModel(TestClass, new TestClass()).get('field') instanceof RxFormGroup).toBeTruthy();
+		expect(writer.writeModel(new TestClass(), TestClass).get('field') instanceof RxFormGroup).toBeTruthy();
 	}));
 
 	it('should write FormGroup value', inject([RxFormWriterService], (writer: RxFormWriterService) => {
@@ -76,7 +76,7 @@ describe('RxFormWriter', () => {
 		const testValue = new TestClass();
 		testValue.field = new ChildTestClass();
 		testValue.field.field = 'test';
-		expect(writer.writeModel(TestClass, testValue).get('field.field').value).toEqual('test');
+		expect(writer.writeModel(testValue, TestClass).get('field.field').value).toEqual('test');
 	}));
 
 	it('should write FormArray field', inject([RxFormWriterService], (writer: RxFormWriterService) => {
@@ -91,7 +91,7 @@ describe('RxFormWriter', () => {
 			public fields: ChildTestClass[];
 		}
 
-		expect(writer.writeModel(TestClass, new TestClass()).get('fields') instanceof RxFormArray).toBeTruthy();
+		expect(writer.writeModel(new TestClass(), TestClass).get('fields') instanceof RxFormArray).toBeTruthy();
 	}));
 
 	it('should write FormArray value', inject([RxFormWriterService], (writer: RxFormWriterService) => {
@@ -109,7 +109,7 @@ describe('RxFormWriter', () => {
 		const testValue = new TestClass();
 		testValue.fields = [new ChildTestClass()];
 		testValue.fields[0].field = 'test';
-		const form = writer.writeModel(TestClass, testValue);
+		const form = writer.writeModel(testValue, TestClass);
 		expect((form.get('fields') as RxFormArray).controls[0].get('field').value).toEqual('test');
 	}));
 });

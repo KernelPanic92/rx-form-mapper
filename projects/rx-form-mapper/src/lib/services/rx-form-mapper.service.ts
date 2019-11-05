@@ -8,17 +8,16 @@ import { RxFormWriterService } from './rx-form-writer.service';
 export class RxFormMapper {
 	constructor(private readonly formWriter: RxFormWriterService, private readonly formReader: RxFormReaderService) {}
 
-	public writeForm<T>(clazz: Type<T>): FormGroup;
 	public writeForm<T>(value: T): FormGroup;
-	public writeForm<T>(clazz: Type<T>, value: T): FormGroup;
-	public writeForm<T>(clazzOrValue: Type<T> | T, value?: T): FormGroup {
-		if (isNil(clazzOrValue)) throw new Error(`unexpected [${clazzOrValue}] type`);
-		const clazz = typeof(clazzOrValue) === 'function' ? clazzOrValue : Object.getPrototypeOf(clazzOrValue).constructor;
-		value = typeof(clazzOrValue) === 'function' ? value : clazzOrValue;
-		return this.formWriter.writeModel(clazz, value);
+	public writeForm<T>(value: T, type: Type<T>): FormGroup;
+	public writeForm<T>(value: T, type?: Type<T>): FormGroup {
+		if (isNil(value) && isNil(type)) throw new Error('type cannot be inferred implicitly');
+		const valueType = isNil(type) ? Object.getPrototypeOf(value).constructor : type;
+
+		return this.formWriter.writeModel(value, valueType);
 	}
 
-	public readForm<T>(clazz: Type<T>, form: FormGroup): T {
-		return this.formReader.readFormGroup(clazz, form);
+	public readForm<T>(form: FormGroup, type: Type<T> ): T {
+		return this.formReader.readFormGroup(form, type);
 	}
 }
