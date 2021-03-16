@@ -9,7 +9,6 @@ jobs:
   release:
     name: Release
     runs-on: ubuntu-latest
-    container: 'node:14-alpine'
     steps:
       - uses: actions/checkout@master
       - uses: actions/setup-node@v1
