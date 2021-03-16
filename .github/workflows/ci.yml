@@ -21,9 +21,9 @@ jobs:
     - uses: actions/setup-node@v1
       with:
         node-version: "14.x"
+    - run: npm ci
+    - run: npm run test-ci
     - uses: codecov/codecov-action@v1
       with:
         fail_ci_if_error: true
         directory: coverage
-    - run: npm ci
-    - run: npm run test-ci
