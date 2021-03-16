@@ -16,7 +16,7 @@ jobs:
           node-version: "14.x"
       - run: npm ci
       - run: npm run lint
-      - run: npm test-ci
+      - run: npm run test-ci
       - run: npm run build-ci
       - run: npx semantic-release
         env:
