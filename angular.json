@@ -10,10 +10,15 @@
       "prefix": "lib",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-ng-packagr:build",
+          "builder": "@angular-devkit/build-angular:ng-packagr",
           "options": {
             "tsConfig": "projects/rx-form-mapper/tsconfig.lib.json",
             "project": "projects/rx-form-mapper/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/rx-form-mapper/tsconfig.lib.prod.json"
+            }
           }
         },
         "test": {
