@@ -7,7 +7,13 @@
 		"unified-signatures": false,
 		"indent": [true, "tabs"],
 		"no-var-keyword": true,
-		"quotemark": [true, "single"],
+    "quotemark": [
+      true,
+      "single"
+    ],
+    "deprecation": {
+      "severity": "warning"
+    },
 		"array-type": false,
 		"interface-name": false,
 		"no-shadowed-variable": false,
