@@ -18,6 +18,8 @@ jobs:
       - run: npm run lint
       - run: npm run test-ci
       - run: npm run build-ci
+      - run: cp README.md dist/rx-form-mapper/
+      - run: cp LICENSE dist/rx-form-mapper/
       - run: npx semantic-release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
