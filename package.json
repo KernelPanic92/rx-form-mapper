@@ -29,7 +29,8 @@
     "test-ci": "ng test --watch=false --browsers=ChromeHeadless",
     "lint": "ng lint",
     "e2e": "ng e2e",
-    "semantic-release": "semantic-release"
+    "semantic-release": "semantic-release",
+    "postinstall": "ngcc"
   },
   "private": false,
   "dependencies": {
