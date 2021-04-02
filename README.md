@@ -294,7 +294,7 @@ export class Post {
 If you want to set a validator on a class or a property, you can do it by specifying `validators` option to `@Form`, `@FormControl`,`@FormGroup` or `@FormArray` decorators
 
 ```typescript
-import { FormControl, Validator } from 'rx-form-mapper';
+import { FormControl } from 'rx-form-mapper';
 
 export class User {
 
@@ -312,7 +312,7 @@ export class User {
 If you want to set an AsyncValidator on a class or a property, you can do it by specifying `asyncValidators` option to `@Form`, `@FormControl`,`@FormGroup` or `@FormArray` decorators
 
 ```typescript
-import { FormControl, Validator } from 'rx-form-mapper';
+import { FormControl } from 'rx-form-mapper';
 
 const asyncValidator = (control: AbstractControl) => return of(undefined);
 
@@ -353,7 +353,7 @@ export class UniqueNameValidator implements AsyncValidator {
 And pass it's type as validator or asyncValidator option
 
 ```typescript
-import { FormControl, AsyncValidator } from 'rx-form-mapper';
+import { FormControl } from 'rx-form-mapper';
 import { UniqueNameValidator } from 'src/app/validators/unique-Name.validator';
 
 export class User {
@@ -371,8 +371,7 @@ export class User {
 Sometimes you want to change the default strategy of form validation, you can do it specifying `updateOn` option to `@Form`, `@FormControl`,`@FormGroup` or `@FormArray` decorators
 
 ```typescript
-import { FormControl, AsyncValidator } from 'rx-form-mapper';
-import { UniqueNameValidator } from 'src/app/validators/unique-Name.validator';
+import { FormControl } from 'rx-form-mapper';
 
 export class User {
 
