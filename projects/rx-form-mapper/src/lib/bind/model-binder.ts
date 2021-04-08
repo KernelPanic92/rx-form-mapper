@@ -1,87 +1,47 @@
 import { Type } from '@angular/core';
-import { AsyncValidator, AsyncValidatorFn, Validator, ValidatorFn } from '@angular/forms';
 import 'reflect-metadata';
-import { ControlType, MetadataDesignTypes, ModelMetadata } from '.';
-import { CustomControlMapper } from '../interfaces/custom-control-mapper';
-import { coerceArray, get } from '../utils';
-import { AbstractControlOpts } from './../decorators/abstract-control-opts';
+import {  MetadataDesignTypes } from '.';
+import { CustomControlOpts, FormArrayOpts, FormControlOpts, FormOpts } from '../decorators';
+import { FormMetadata } from '../metadata';
 
-class ModelBinder {
+export class ModelBinder {
+
 	private metadataKey = 'rx-form-mapper-metadata';
 
-	public getMetadata(target: Type<any>): ModelMetadata {
-		const defaultModelDescriptor: ModelMetadata = {
-			asyncValidators: [],
-			validators: [],
-			properties: {}
-		};
-		const reflectedMetadata = Reflect.getMetadata(this.metadataKey, target);
-		return Object.assign({}, defaultModelDescriptor, reflectedMetadata);
+	public static readonly instance = new ModelBinder();
+
+	private constructor() {}
+
+	public getMetadata(target: Type<any>): FormMetadata {
+		if (!Reflect.hasMetadata(this.metadataKey, target)) {
+			Reflect.defineMetadata(this.metadataKey, new FormMetadata(target), target);
+		}
+
+		return Reflect.getMetadata(this.metadataKey, target);
 	}
 
-	public bindForm(target: Type<any>, opts: AbstractControlOpts) {
-		const metadata: ModelMetadata = this.getMetadata(target);
-		metadata.asyncValidators = coerceArray(get(opts, 'asyncValidators', []));
-		metadata.validators = coerceArray(get(opts, 'validators', []));
-		metadata.updateOn = get(opts, 'updateOn');
-		this.setMetadata(target, metadata);
+	public bindForm(target: Type<any>, opts: FormOpts) {
+		const formMetadata: FormMetadata = this.getMetadata(target);
+		formMetadata.setValidators(opts);
 	}
 
-	public bindCustomControl(target: any, propertyName: string, mapper: Type<CustomControlMapper>, opts: AbstractControlOpts) {
-		const metadata: ModelMetadata = this.getMetadata(target.constructor);
-
-		metadata.properties[propertyName] = {
-			asyncValidators: coerceArray(get(opts, 'asyncValidators', [])),
-			validators: coerceArray(get(opts, 'validators', [])),
-			propertyType: Reflect.getMetadata(MetadataDesignTypes.TYPE, target, propertyName),
-			type: ControlType.CUSTOM,
-			updateOn: get(opts, 'updateOn', void 0),
-			customMapper: mapper
-		};
-
-		this.setMetadata(target.constructor, metadata);
+	public bindCustomControl(target: {constructor: Type<any>}, propertyName: string, opts: CustomControlOpts) {
+		this.getMetadata(target.constructor).setCustomControl(propertyName, opts.mapper, opts);
 	}
 
-	public bindFormControl(target: {constructor: Type<any>}, propertyName: string, opts?: AbstractControlOpts): void {
-		this.bindFormControlOrGroup(target, propertyName, ControlType.FORM_CONTROL, opts);
+	public bindFormControl(target: {constructor: Type<any>}, propertyName: string, opts?: FormControlOpts): void {
+		this.getMetadata(target.constructor).setFormControl(propertyName, opts);
 	}
 
-	public bindFormGroup(target: {constructor: Type<any>}, propertyName: string, opts?: AbstractControlOpts): void {
-		this.bindFormControlOrGroup(target, propertyName, ControlType.FORM_GROUP, opts);
+	public bindFormGroup(target: {constructor: Type<any>}, propertyName: string, type?: Type<any>): void {
+		const propertyType = type ?? Reflect.getMetadata(MetadataDesignTypes.TYPE, target, propertyName);
+		const propertyFormMetadata = this.getMetadata(propertyType);
+		this.getMetadata(target.constructor).setFormGroup(propertyName, propertyFormMetadata);
 	}
 
-	public bindFormArray(target: {constructor: Type<any>}, propertyName: string, opts: AbstractControlOpts): void {
-		const metadata: ModelMetadata = this.getMetadata(target.constructor);
-
-		metadata.properties[propertyName] = {
-			asyncValidators: coerceArray(get(opts, 'asyncValidators', [])),
-			validators: coerceArray(get(opts, 'validators', [])),
-			propertyType: Reflect.getMetadata(MetadataDesignTypes.TYPE, target, propertyName),
-			propertyGenericArgumentType: get(opts, 'type'),
-			type: ControlType.FORM_ARRAY,
-			updateOn: get(opts, 'updateOn', void 0)
-		};
-
-		this.setMetadata(target.constructor, metadata);
+	public bindFormArray(target: {constructor: Type<any>}, propertyName: string, opts: FormArrayOpts): void {
+		const itemFormMetadata = this.getMetadata(opts.type);
+		this.getMetadata(target.constructor).setFormArray(propertyName, itemFormMetadata, opts);
 	}
 
-	private bindFormControlOrGroup(target: {constructor: Type<any>}, propertyName: string, controlType: ControlType.FORM_CONTROL | ControlType.FORM_GROUP, opts?: AbstractControlOpts): void {
-		const metadata: ModelMetadata = this.getMetadata(target.constructor);
-
-		metadata.properties[propertyName] = {
-			asyncValidators: coerceArray(get(opts, 'asyncValidators', [])),
-			validators: coerceArray(get(opts, 'validators', [])),
-			propertyType: get(opts, 'type', Reflect.getMetadata(MetadataDesignTypes.TYPE, target, propertyName)),
-			type: controlType,
-			updateOn: get(opts, 'updateOn', void 0)
-		};
-
-		this.setMetadata(target.constructor, metadata);
-	}
-
-	private setMetadata(target: Type<any>, metadata: ModelMetadata) {
-		Reflect.defineMetadata(this.metadataKey, metadata, target);
-	}
 }
-
-export const modelBinder = new ModelBinder();

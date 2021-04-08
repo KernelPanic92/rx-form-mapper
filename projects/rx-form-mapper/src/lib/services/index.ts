@@ -1,3 +1,5 @@
+export * from './custom-mapper-resolver';
+export * from './form-reader';
+export * from './form-writer';
 export * from './rx-form-mapper.service';
-export * from './rx-form-reader.service';
-export * from './rx-form-writer.service';
+export * from './validator-resolver';

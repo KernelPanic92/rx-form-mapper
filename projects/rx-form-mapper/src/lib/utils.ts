@@ -22,7 +22,7 @@ export function get(value: any, path: string, defaultValue?: any): any {
 		if (isNil(stepValue)) return defaultValue;
 		stepValue = stepValue[step];
 	}
-	return isNil(stepValue) ? defaultValue : stepValue;
+	return stepValue ?? defaultValue;
 }
 
 export function coerceArray<T>(value: T | Array<T>): Array<T> {

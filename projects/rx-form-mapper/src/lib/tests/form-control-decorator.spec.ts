@@ -1,5 +1,6 @@
-import { ControlType, modelBinder } from '../bind';
+import { ModelBinder } from '../bind';
 import { FormControl } from '../decorators';
+import { FormControlMetadata } from '../metadata';
 
 describe('FormControl decorator', () => {
 
@@ -9,7 +10,7 @@ describe('FormControl decorator', () => {
 			public field: string[];
 		}
 
-		expect(modelBinder.getMetadata(Test).properties.field.type === ControlType.FORM_CONTROL).toBeTruthy();
+		expect(ModelBinder.instance.getMetadata(Test).controls.field instanceof FormControlMetadata).toBeTruthy();
 	});
 
 });

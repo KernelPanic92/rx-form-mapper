@@ -1,13 +1,13 @@
 import { NgModule } from '@angular/core';
+import { CustomMapperResolver } from './services/custom-mapper-resolver';
 import { RxFormMapper } from './services/rx-form-mapper.service';
-import { RxFormReaderService } from './services/rx-form-reader.service';
-import { RxFormWriterService } from './services/rx-form-writer.service';
+import { ValidatorResolver } from './services/validator-resolver';
 
 @NgModule({
 	providers: [
-		RxFormReaderService,
-		RxFormWriterService,
-		RxFormMapper
+		RxFormMapper,
+		CustomMapperResolver,
+		ValidatorResolver
 	]
 })
 export class RxFormMapperModule {}

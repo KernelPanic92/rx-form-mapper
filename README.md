@@ -176,6 +176,7 @@ const post: Post = formMapper.readForm(this.form, Post);
 If you want to expose some of properties as a FormControl, you can do it by @FormControl decorator
 
 ```typescript
+
 import { FormControl } from 'rx-form-mapper';
 
 export class User {
@@ -197,6 +198,7 @@ export class User {
 If you want to expose some of properties as a FormGroup, you can do it by @FormGroup decorator
 
 ```typescript
+
 import { FormGroup } from 'rx-form-mapper';
 
 export class Child {}
@@ -213,6 +215,7 @@ export class User {
 If you want to expose some of properties as a FormArray, you can do it by @FormArray decorator
 
 ```typescript
+
 import { FormGroup } from 'rx-form-mapper';
 
 export class Child {}
@@ -231,6 +234,7 @@ When you're trying to serialize a property into FormArray its required to known 
 If you want to add extra data to your form, you can do it by optional @Form decorator
 
 ```typescript
+
 import { Form } from 'rx-form-mapper';
 
 @Form({
@@ -257,26 +261,71 @@ If you want to create custom forms for specific fields, you can do it by @Custom
 Declare your custom mapper class implementing `CustomControlMapper` interface
 
 ```typescript
+
 import { CustomControlMapper } from 'rx-form-mapper';
 import { AbstractControlOptions, FormControl } from '@angular/forms';
 
 export class CustomAuthorControlMapper implements CustomControlMapper {
 
-	public writeForm(value: any, type: Type<any>, abstractControlOptions: AbstractControlOptions): AbstractControl {
+	public writeForm(value: any, abstractControlOptions: AbstractControlOptions): AbstractControl {
 		return new FormControl(value, abstractControlOptions);
 	}
 
-	public readForm(control: AbstractControl, type: Type<any>): ChildTestClass {
+	public readForm(control: AbstractControl): ChildTestClass {
 		return control.value;
 	}
 
 }
+
 ```
 
 And pass it's type as argument of CustomControl decorator
 
 
 ```typescript
+
+import { Form } from 'rx-form-mapper';
+import { CustomAuthorControlMapper } from '.';
+
+export class Post {
+
+	@CustomControl(CustomAuthorControlMapper)
+	author: Person;
+
+}
+
+```
+
+## Injectable CustomMapper
+
+Sometimes you want to injects other services into your CustomMapper, RxFormMapper allows you to do it simple:
+
+Declare your CustomControlMapper class, decorate with `@Injectable` and includes it in a module as a normal service.
+
+```typescript
+
+import { CustomControlMapper } from 'rx-form-mapper';
+import { AbstractControlOptions, FormControl } from '@angular/forms';
+
+@Injectable()
+export class CustomAuthorControlMapper implements CustomControlMapper {
+
+	public writeForm(value: any, abstractControlOptions: AbstractControlOptions): AbstractControl {
+		return new FormControl(value, abstractControlOptions);
+	}
+
+	public readForm(control: AbstractControl): ChildTestClass {
+		return control.value;
+	}
+
+}
+
+```
+
+And pass it's type as validator or asyncValidator option
+
+```typescript
+
 import { Form } from 'rx-form-mapper';
 import { CustomAuthorControlMapper } from '.';
 
@@ -291,9 +340,10 @@ export class Post {
 
 ## Validators
 
-If you want to set a validator on a class or a property, you can do it by specifying `validators` option to `@Form`, `@FormControl`,`@FormGroup` or `@FormArray` decorators
+If you want to set a validator on a class or a property, you can do it by specifying `validators` option to `@Form`, `@FormControl`,`@CustomControl` or `@FormArray` decorators
 
 ```typescript
+
 import { FormControl } from 'rx-form-mapper';
 
 export class User {
@@ -309,9 +359,10 @@ export class User {
 
 ## Async validators
 
-If you want to set an AsyncValidator on a class or a property, you can do it by specifying `asyncValidators` option to `@Form`, `@FormControl`,`@FormGroup` or `@FormArray` decorators
+If you want to set an AsyncValidator on a class or a property, you can do it by specifying `asyncValidators` option to `@Form`, `@FormControl`,`@CustomControl` or `@FormArray` decorators
 
 ```typescript
+
 import { FormControl } from 'rx-form-mapper';
 
 const asyncValidator = (control: AbstractControl) => return of(undefined);
@@ -335,6 +386,7 @@ Sometimes you want to injects other services into your validator or asyncValidat
 Declare your validator class implementing `Validator` or `AsyncValidator` interfaces, decorate with `@Injectable` and includes it in a module as a normal service.
 
 ```typescript
+
 import { AsyncValidator } from '@angular/forms';
 
 @Injectable()
@@ -353,6 +405,7 @@ export class UniqueNameValidator implements AsyncValidator {
 And pass it's type as validator or asyncValidator option
 
 ```typescript
+
 import { FormControl } from 'rx-form-mapper';
 import { UniqueNameValidator } from 'src/app/validators/unique-Name.validator';
 
@@ -364,13 +417,15 @@ export class User {
 	name: string;
 
 }
+
 ```
 
 ## Validation strategy
 
-Sometimes you want to change the default strategy of form validation, you can do it specifying `updateOn` option to `@Form`, `@FormControl`,`@FormGroup` or `@FormArray` decorators
+Sometimes you want to change the default strategy of form validation, you can do it specifying `updateOn` option to `@Form`, `@FormControl`,`@CustomControl` or `@FormArray` decorators
 
 ```typescript
+
 import { FormControl } from 'rx-form-mapper';
 
 export class User {
@@ -382,4 +437,5 @@ export class User {
 	name: string;
 
 }
+
 ```
