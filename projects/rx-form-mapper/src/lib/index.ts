@@ -4,6 +4,5 @@ export * from './interfaces';
 export * from './metadata';
 export * from './rx-form-mapper.module';
 export * from './services';
-export * from './tests/custom-mapper-resolver';
 export * from './types';
 export * from './utils';

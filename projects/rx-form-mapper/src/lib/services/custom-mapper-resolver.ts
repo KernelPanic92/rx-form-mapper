@@ -6,12 +6,6 @@ export class CustomMapperResolver {
 	public constructor(private readonly injector: Injector) {}
 
 	public resolve(type: Type<CustomControlMapper>): CustomControlMapper {
-		let mapper = this.injector.get(type, null, InjectFlags.Optional);
-
-		if (!mapper) {
-			mapper = new type();
-		}
-
-		return mapper;
+		return this.injector.get(type, null, InjectFlags.Optional) ?? new type();
 	}
 }

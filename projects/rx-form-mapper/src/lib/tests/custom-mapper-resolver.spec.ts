@@ -6,8 +6,11 @@ import { CustomControlMapper } from '../interfaces';
 import { RxFormMapper } from '../services';
 import { CustomMapperResolver } from '../services/custom-mapper-resolver';
 
-@Injectable()
-class InjectableCustomControlMapper implements CustomControlMapper {
+class UninstantiableCustomControlMapper implements CustomControlMapper {
+
+	public constructor() {
+		throw new Error('invalid operation');
+	}
 
 	public writeForm(value: any, abstractControlOptions: AbstractControlOptions): AbstractControl {
 		return null;
@@ -19,23 +22,18 @@ class InjectableCustomControlMapper implements CustomControlMapper {
 
 }
 
-class SimpleCustomControlMapper implements CustomControlMapper {
-
-	public writeForm(value: any, abstractControlOptions: AbstractControlOptions): AbstractControl {
-		return null;
+class InstantiableCustomControlMapper extends UninstantiableCustomControlMapper {
+	public constructor() {
+		try{
+			super();
+		} catch (error) { /* do nothing */ }
 	}
-
-	public readForm(control: AbstractControl) {
-		return null;
-	}
-
 }
 
 describe('RxFormMapper', () => {
 	beforeEach(() => {
 		TestBed.configureTestingModule({
 			imports: [RxFormMapperModule],
-			providers: [InjectableCustomControlMapper]
 		}).compileComponents();
 	});
 
@@ -44,9 +42,10 @@ describe('RxFormMapper', () => {
 	}));
 
 	it('should resolve injected mapper', inject([Injector], (injector: Injector) => {
-		spyOn(injector, 'get');
+		spyOn(injector, 'get').and.returnValue(new InstantiableCustomControlMapper());
 
-		const mapper = new CustomMapperResolver(injector).resolve(InjectableCustomControlMapper);
+
+		const mapper = new CustomMapperResolver(injector).resolve(UninstantiableCustomControlMapper);
 
 		expect(mapper).toBeTruthy();
 		// tslint:disable-next-line: deprecation
@@ -56,7 +55,7 @@ describe('RxFormMapper', () => {
 	it('should instantiate mapper', inject([Injector], (injector: Injector) => {
 		spyOn(injector, 'get').and.returnValue(null);
 
-		const mapper = new CustomMapperResolver(injector).resolve(SimpleCustomControlMapper);
+		const mapper = new CustomMapperResolver(injector).resolve(InstantiableCustomControlMapper);
 
 		expect(mapper).toBeTruthy();
 	}));

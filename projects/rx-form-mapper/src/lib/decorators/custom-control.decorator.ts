@@ -1,6 +1,7 @@
 import { Type } from '@angular/core';
+import { isNil } from 'lodash';
 import 'reflect-metadata';
-import { RxValidator, RxAsyncValidator, isNil } from '..';
+import { RxValidator, RxAsyncValidator } from '..';
 import { CustomControlMapper } from '../interfaces/custom-control-mapper';
 import { UpdateOn } from '../types';
 import { ModelBinder } from './../bind/model-binder';
@@ -18,13 +19,13 @@ export function CustomControl(optsOrMapper: Type<CustomControlMapper> | CustomCo
 	return (target: any, propertyName: string) => {
 
 		if (isNil(optsOrMapper)) {
-			throw new Error(`unexpected FormArray configuration: ${optsOrMapper}`);
+			throw new Error(`unexpected CustomControl configuration: ${optsOrMapper}`);
 		}
 
-		const customControlOpts: CustomControlOpts = typeof(optsOrMapper) === 'object' ? optsOrMapper : {
-			mapper: optsOrMapper
-		};
+		if (typeof(optsOrMapper) !== 'object') {
+			optsOrMapper = { mapper: optsOrMapper };
+		}
 
-		ModelBinder.instance.bindCustomControl(target, propertyName, customControlOpts);
+		ModelBinder.instance.bindCustomControl(target, propertyName, optsOrMapper);
 	};
 }
