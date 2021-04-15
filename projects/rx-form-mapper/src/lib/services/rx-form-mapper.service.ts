@@ -9,7 +9,7 @@ import { ValidatorResolver } from './validator-resolver';
 
 @Injectable()
 export class RxFormMapper {
-	constructor(private readonly injector: Injector) {}
+	constructor(private readonly customMapperResolver: CustomMapperResolver, private readonly validatorResolver: ValidatorResolver) {}
 
 	public writeForm<T>(value: T): FormGroup;
 	public writeForm<T>(value: T, type: Type<T>): FormGroup;
@@ -19,7 +19,7 @@ export class RxFormMapper {
 		}
 
 		const valueType = type ?? Object.getPrototypeOf(value).constructor;
-		const formWriter = new FormWriter(value, new CustomMapperResolver(this.injector), new ValidatorResolver(this.injector));
+		const formWriter = new FormWriter(value, this.customMapperResolver, this.validatorResolver);
 		return ModelBinder.instance.getMetadata(valueType).accept(formWriter) as FormGroup;
 
 	}
@@ -29,11 +29,7 @@ export class RxFormMapper {
 			throw new Error('type cannot be inferred implicitly');
 		}
 
-		if (isNil(form)) {
-			return void(0);
-		}
-
-		const formReader = new FormReader(form, this.injector);
+		const formReader = new FormReader(form, this.customMapperResolver);
 		return ModelBinder.instance.getMetadata(type).accept(formReader);
 	}
 }

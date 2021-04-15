@@ -1,40 +1,19 @@
+import { Validators } from '@angular/forms';
 import { ModelBinder } from '../bind';
-import { FormArray } from '../decorators';
-import { FormArrayMetadata } from '../metadata';
+import { Form } from '../decorators';
 
-describe('FormArray decorator', () => {
+describe('Form decorator', () => {
 
-	it('should decorate with type', () => {
+	it('should decorate', () => {
+
+		@Form({ validators: Validators.required })
 		class Test {
-			@FormArray(String)
+
 			public field: string[];
+
 		}
 
-		expect(ModelBinder.instance.getMetadata(Test).controls.field instanceof FormArrayMetadata).toBeTruthy();
-		const formArrayMetadata = ModelBinder.instance.getMetadata(Test).controls.field as FormArrayMetadata;
-		expect(formArrayMetadata.itemForm.type === String).toBeTruthy();
-	});
-
-	it('should decorate with opts', () => {
-		class Test {
-			@FormArray({type: String})
-			public field: string[];
-		}
-
-		const formArrayMetadata = ModelBinder.instance.getMetadata(Test).controls.field as FormArrayMetadata;
-		expect(formArrayMetadata.itemForm.type === String).toBeTruthy();
-	});
-
-	it('should throw error when configuration is invalid', ()=> {
-
-		expect(() => {
-
-			class TestClass {
-				@FormArray(null)
-				public field: [];
-			}
-
-		}).toThrow();
+		expect(ModelBinder.instance.getMetadata(Test).validators).toHaveSize(1);
 	});
 
 });

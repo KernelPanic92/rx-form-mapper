@@ -5,7 +5,7 @@ import { CustomControlMetadata } from '../metadata';
 
 describe('CustomControl decorator', () => {
 
-	it('should decorate', () => {
+	it('should decorate with type', () => {
 
 		class CustomControlMapperImpl implements CustomControlMapper {
 			public writeForm(value: any, abstractControlOptions: AbstractControlOptions): AbstractControl {
@@ -19,6 +19,28 @@ describe('CustomControl decorator', () => {
 
 		class Test {
 			@CustomControl(CustomControlMapperImpl)
+			public field: string[];
+		}
+
+		expect(ModelBinder.instance.getMetadata(Test).controls.field instanceof CustomControlMetadata).toBeTruthy();
+	});
+
+	it('should decorate with opts', () => {
+
+		class CustomControlMapperImpl implements CustomControlMapper {
+			public writeForm(value: any, abstractControlOptions: AbstractControlOptions): AbstractControl {
+				return new FormControl(value, abstractControlOptions);
+			}
+
+			public readForm(control: AbstractControl): any {
+				return control.value;
+			}
+		}
+
+		class Test {
+			@CustomControl({
+				mapper: CustomControlMapperImpl
+			})
 			public field: string[];
 		}
 

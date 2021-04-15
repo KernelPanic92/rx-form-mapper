@@ -13,4 +13,13 @@ describe('FormGroup decorator', () => {
 		expect(ModelBinder.instance.getMetadata(Test).controls.field instanceof FormGroupMetadata).toBeTruthy();
 	});
 
+	it('should decorate with type', () => {
+		class Test {
+			@FormGroup(String)
+			public field: string[];
+		}
+
+		expect(ModelBinder.instance.getMetadata(Test).controls.field instanceof FormGroupMetadata).toBeTruthy();
+	});
+
 });

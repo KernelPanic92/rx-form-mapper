@@ -1,59 +1,49 @@
-import { InjectFlags, Injector, Type } from '@angular/core';
+import { Type } from '@angular/core';
 import { AbstractControl, FormArray, FormControl, FormGroup } from '@angular/forms';
-import { CustomControlMapper } from '..';
 import { ControlVisitor, CustomControlMetadata, FormArrayMetadata, FormControlMetadata, FormGroupMetadata, FormMetadata } from '../metadata';
+import { CustomMapperResolver } from './custom-mapper-resolver';
 
 export class FormReader implements ControlVisitor<any> {
 
-	public constructor(private readonly control: AbstractControl, private readonly injector: Injector) {}
+	public constructor(private readonly control: AbstractControl, private readonly customMapperResolver: CustomMapperResolver) {}
 
 	public visitCustomControlMetadata(customControlMetadata: CustomControlMetadata): any {
-		return this.resolveCustomMapper(customControlMetadata.mapper).readForm(this.control);
+		return this.customMapperResolver.resolve(customControlMetadata.mapper).readForm(this.control);
 	}
 
-	public visitFormArrayMetadata(formArrayMetadata: FormArrayMetadata) {
+	public visitFormArrayMetadata(formArrayMetadata: FormArrayMetadata): any {
 		if (!this.control) {
-			return void 0;
+			return void(0);
 		}
 
-		if (!(this.control instanceof FormArray)) {
-			throw new Error('controller is not FormArray instance');
-		}
+		this.checkControlType(this.control, FormArray);
 
-		return this.control.controls.map(control => {
+		return (this.control as FormArray).controls.map(control => {
 			const subFormReader = this.copyPrototype(control);
 			return formArrayMetadata.itemForm.accept(subFormReader);
 		});
 	}
 
-	public visitFormControlMetadata(formControlMetadata: FormControlMetadata) {
+	public visitFormControlMetadata(formControlMetadata: FormControlMetadata): any {
 		if (!this.control) {
-			return void 0;
+			return void(0);
 		}
 
-		if (!(this.control instanceof FormControl)) {
-			throw new Error('controller is not FormControl instance');
-		}
+		this.checkControlType(this.control, FormControl);
 
 		return this.control.value;
 	}
 
-	public visitFormGroupMetadata(formGroupMetadata: FormGroupMetadata) {
-		if (!this.control) {
-			return void 0;
-		}
-
-		if (!(this.control instanceof FormGroup)) {
-			throw new Error('controller is not FormGroup instance');
-		}
-
+	public visitFormGroupMetadata(formGroupMetadata: FormGroupMetadata): any {
 		return this.visitFormMetadata(formGroupMetadata.form);
 	}
 
-	public visitFormMetadata(formMetadata: FormMetadata) {
+	public visitFormMetadata(formMetadata: FormMetadata): any {
 		if (!this.control) {
-			return void 0;
+			return void(0);
 		}
+
+		this.checkControlType(this.control, FormGroup);
 
 		const value = new formMetadata.type();
 		const formGroup: FormGroup = this.control as FormGroup;
@@ -67,12 +57,16 @@ export class FormReader implements ControlVisitor<any> {
 		return value;
 	}
 
-	private resolveCustomMapper(mapperType: Type<CustomControlMapper>): CustomControlMapper {
-		return this.injector.get(mapperType, null, InjectFlags.Optional) ?? new mapperType();
+	private copyPrototype(control: AbstractControl): FormReader {
+		return new FormReader(control, this.customMapperResolver);
 	}
 
-	private copyPrototype(control: AbstractControl): FormReader {
-		return new FormReader(control, this.injector);
+	private checkControlType(control: AbstractControl, type: Type<any>): void {
+		if (control instanceof type) {
+			return;
+		}
+
+		throw new Error(`control is not ${type.name} instance`);
 	}
 
 }
