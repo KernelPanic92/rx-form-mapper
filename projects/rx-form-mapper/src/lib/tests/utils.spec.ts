@@ -3,15 +3,19 @@ import { coerceArray } from '../utils';
 describe('utils', () => {
 
 	it('coerceArray should return array when value is array', () => {
-		expect(Array.isArray(coerceArray([]))).toBeTruthy();
+		expect(coerceArray([1])).toEqual([1]);
+	});
+
+	it('coerceArray should return array when value is empty array', () => {
+		expect(coerceArray([])).toEqual([]);
 	});
 
 	it('coerceArray should return array when value is not array', () => {
-		expect(Array.isArray(coerceArray(1))).toBeTruthy();
+		expect(coerceArray(1)).toEqual([1]);
 	});
 
 	it('coerceArray should return array when value is undefined', () => {
-		expect(Array.isArray(coerceArray(undefined))).toBeTruthy();
+		expect(coerceArray(undefined)).toEqual([]);
 	});
 
 });

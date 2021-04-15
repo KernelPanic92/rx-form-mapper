@@ -1,5 +1,6 @@
 import { Injectable, InjectFlags, Injector } from '@angular/core';
 import { AbstractControl, AsyncValidatorFn, ValidatorFn } from '@angular/forms';
+import { isFunction } from 'lodash';
 import { RxAsyncValidator, RxValidator } from '../types';
 
 @Injectable()
@@ -29,7 +30,7 @@ export class ValidatorResolver {
 	}
 
 	private isValidatorFn(value: any): boolean {
-		return typeof(value) === 'function' && !value.prototype.validate;
+		return isFunction(value) && !value.prototype.validate;
 	}
 
 	private isValidatorInstance(value: any): boolean {
