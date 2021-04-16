@@ -1,17 +1,29 @@
 import { Type } from '@angular/core';
+import { isFunction, isNil } from 'lodash';
 import 'reflect-metadata';
-import { modelBinder } from '../bind/model-binder';
-import { FormArrayOpts } from './form-array-control-opts';
+import { RxValidator, RxAsyncValidator, UpdateOn, isType } from '..';
+import { ModelBinder } from '../bind/model-binder';
+
+export interface FormArrayOpts {
+	validators?: RxValidator | RxValidator[];
+	asyncValidators?: RxAsyncValidator | RxAsyncValidator[];
+	updateOn?: UpdateOn;
+	type: Type<any>;
+}
 
 export function FormArray(type: Type<any>): (target: Object, propertyName: string) => void;
 export function FormArray(opts: FormArrayOpts): (target: Object, propertyName: string) => void;
 export function FormArray(optsOrType: FormArrayOpts | Type<any>): (target: Object, propertyName: string) => void {
 	return (target: any, propertyName: string) => {
 
-		const defaultFormArrayOpts: FormArrayOpts = typeof(optsOrType) === 'object' ? optsOrType : {
-			type: optsOrType
-		};
+		if (isNil(optsOrType)) {
+			throw new Error(`unexpected FormArray configuration: ${optsOrType}`);
+		}
 
-		modelBinder.bindFormArray(target, propertyName, defaultFormArrayOpts);
+		if (isType(optsOrType)) {
+			optsOrType = { type: optsOrType };
+		}
+
+		ModelBinder.instance.bindFormArray(target, propertyName, optsOrType);
 	};
 }

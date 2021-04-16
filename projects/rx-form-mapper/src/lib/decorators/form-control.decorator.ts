@@ -1,10 +1,15 @@
 import 'reflect-metadata';
-import { modelBinder } from './../bind/model-binder';
-import { AbstractControlOpts } from './abstract-control-opts';
+import { RxAsyncValidator, RxValidator, UpdateOn } from '../types';
+import { ModelBinder } from './../bind/model-binder';
 
-export function FormControl(opts?: AbstractControlOpts): (target: any, propertyName: string) => void {
+export interface FormControlOpts {
+	validators?: RxValidator | RxValidator[];
+	asyncValidators?: RxAsyncValidator | RxAsyncValidator[];
+	updateOn?: UpdateOn;
+}
+
+export function FormControl(opts?: FormControlOpts): (target: any, propertyName: string) => void {
 	return (target: any, propertyName: string) => {
-
-		modelBinder.bindFormControl(target, propertyName, opts);
+		ModelBinder.instance.bindFormControl(target, propertyName, opts);
 	};
 }

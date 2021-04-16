@@ -1,9 +1,9 @@
+import { Type } from '@angular/core';
 import 'reflect-metadata';
-import { modelBinder } from '../bind/model-binder';
-import { AbstractControlOpts } from './abstract-control-opts';
+import { ModelBinder } from '../bind/model-binder';
 
-export function FormGroup(opts?: AbstractControlOpts): (target: any, propertyName: string) => void {
+export function FormGroup(type?: Type<any>): (target: any, propertyName: string) => void {
 	return (target: any, propertyName: string) => {
-		modelBinder.bindFormGroup(target, propertyName, opts);
+		ModelBinder.instance.bindFormGroup(target, propertyName, type);
 	};
 }

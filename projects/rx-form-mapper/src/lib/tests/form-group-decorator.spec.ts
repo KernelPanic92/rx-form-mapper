@@ -1,6 +1,6 @@
-import { ControlType } from '../bind';
-import { modelBinder } from '../bind/model-binder';
+import { ModelBinder } from '../bind';
 import { FormGroup } from '../decorators';
+import { FormGroupMetadata } from '../metadata';
 
 describe('FormGroup decorator', () => {
 
@@ -10,7 +10,16 @@ describe('FormGroup decorator', () => {
 			public field: string[];
 		}
 
-		expect(modelBinder.getMetadata(Test).properties.field.type === ControlType.FORM_GROUP).toBeTruthy();
+		expect(ModelBinder.instance.getMetadata(Test).controls.field instanceof FormGroupMetadata).toBeTruthy();
+	});
+
+	it('should decorate with type', () => {
+		class Test {
+			@FormGroup(String)
+			public field: string[];
+		}
+
+		expect(ModelBinder.instance.getMetadata(Test).controls.field instanceof FormGroupMetadata).toBeTruthy();
 	});
 
 });

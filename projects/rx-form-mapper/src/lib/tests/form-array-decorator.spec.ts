@@ -1,5 +1,6 @@
-import { ControlType, modelBinder } from '../bind';
+import { ModelBinder } from '../bind';
 import { FormArray } from '../decorators';
+import { FormArrayMetadata } from '../metadata';
 
 describe('FormArray decorator', () => {
 
@@ -9,8 +10,9 @@ describe('FormArray decorator', () => {
 			public field: string[];
 		}
 
-		expect(modelBinder.getMetadata(Test).properties.field.type === ControlType.FORM_ARRAY).toBeTruthy();
-		expect(modelBinder.getMetadata(Test).properties.field.propertyGenericArgumentType === String).toBeTruthy();
+		expect(ModelBinder.instance.getMetadata(Test).controls.field instanceof FormArrayMetadata).toBeTruthy();
+		const formArrayMetadata = ModelBinder.instance.getMetadata(Test).controls.field as FormArrayMetadata;
+		expect(formArrayMetadata.itemForm.type === String).toBeTruthy();
 	});
 
 	it('should decorate with opts', () => {
@@ -19,7 +21,20 @@ describe('FormArray decorator', () => {
 			public field: string[];
 		}
 
-		expect(modelBinder.getMetadata(Test).properties.field.propertyGenericArgumentType === String).toBeTruthy();
+		const formArrayMetadata = ModelBinder.instance.getMetadata(Test).controls.field as FormArrayMetadata;
+		expect(formArrayMetadata.itemForm.type === String).toBeTruthy();
+	});
+
+	it('should throw error when configuration is invalid', ()=> {
+
+		expect(() => {
+
+			class TestClass {
+				@FormArray(null)
+				public field: [];
+			}
+
+		}).toThrow();
 	});
 
 });
