@@ -6,10 +6,10 @@ import { CustomControlMapper } from '../interfaces';
 import { RxFormMapper, ValidatorResolver } from '../services';
 import { CustomMapperResolver } from '../services/custom-mapper-resolver';
 
-describe('RxFormMapper', () => {
+describe('ValidatorResolver', () => {
 	beforeEach(() => {
 		TestBed.configureTestingModule({
-			imports: [RxFormMapperModule],
+			imports: [RxFormMapperModule.forRoot()],
 		}).compileComponents();
 	});
 

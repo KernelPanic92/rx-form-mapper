@@ -30,10 +30,10 @@ class InstantiableCustomControlMapper extends UninstantiableCustomControlMapper 
 	}
 }
 
-describe('RxFormMapper', () => {
+describe('CustomMapperResolver', () => {
 	beforeEach(() => {
 		TestBed.configureTestingModule({
-			imports: [RxFormMapperModule],
+			imports: [RxFormMapperModule.forRoot()],
 		}).compileComponents();
 	});
 
