@@ -80,6 +80,10 @@ export class UserEditorComponent {
 
 ```
 
+## Try it
+
+See it in action at https://stackblitz.com/edit/rx-form-mapper-example?file=src/app/user-registration.ts
+
 ## Getting started
 
 
