@@ -11,10 +11,10 @@ import {
 } from '@angular/forms';
 import { of } from 'rxjs';
 
-describe('CustomMapperResolver', () => {
+describe('RxFormMapper', () => {
 	beforeEach(() => {
 		TestBed.configureTestingModule({
-			imports: [RxFormMapperModule]
+			imports: [RxFormMapperModule.forRoot()]
 		}).compileComponents();
 	});
 
