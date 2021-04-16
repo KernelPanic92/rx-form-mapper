@@ -109,7 +109,7 @@ import { RxFormMapperModule } from 'rx-form-mapper';
 
 @NgModule({
   ...
-  imports: [RxFormMapperModule],
+  imports: [RxFormMapperModule.forRoot()],
   ...
 })
 export class MyAppModule { }
