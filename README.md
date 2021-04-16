@@ -8,6 +8,7 @@
 [![dependencies Status](https://david-dm.org/KernelPanic92/rx-form-mapper/status.svg)](https://david-dm.org/KernelPanic92/rx-form-mapper)
 [![NPM License](https://img.shields.io/npm/l/rx-form-mapper.svg)](https://img.shields.io/npm/l/rx-form-mapper.svg)
 [![NPM bundle size](https://img.shields.io/bundlephobia/min/rx-form-mapper.svg)](https://img.shields.io/bundlephobia/min/rx-form-mapper.svg)
+[![semantic-release](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg)](https://github.com/semantic-release/semantic-release)
 
 RxFormMapper is a framework developed for angular and allows you to convert, by annotation, classes into reactive form and vice versa.
 
