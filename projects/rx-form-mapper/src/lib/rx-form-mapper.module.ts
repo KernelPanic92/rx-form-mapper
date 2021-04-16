@@ -1,13 +1,24 @@
-import { NgModule } from '@angular/core';
-import { CustomMapperResolver } from './services/custom-mapper-resolver';
-import { RxFormMapper } from './services/rx-form-mapper.service';
-import { ValidatorResolver } from './services/validator-resolver';
+import { ModuleWithProviders, NgModule, Optional, SkipSelf } from '@angular/core';
+import { RxFormMapper, ValidatorResolver, CustomMapperResolver } from './services';
 
-@NgModule({
-	providers: [
-		RxFormMapper,
-		CustomMapperResolver,
-		ValidatorResolver
-	]
-})
-export class RxFormMapperModule {}
+@NgModule()
+export class RxFormMapperModule {
+
+	public static forRoot(): ModuleWithProviders<RxFormMapperModule> {
+		return {
+			ngModule: RxFormMapperModule,
+			providers: [
+				RxFormMapper,
+				CustomMapperResolver,
+				ValidatorResolver
+			]
+		};
+	}
+
+	public constructor(@Optional() @SkipSelf() parentModule?: RxFormMapperModule) {
+		if (parentModule) {
+			throw new Error('RxFormMapperModule is already loaded. Import it in the AppModule only');
+		}
+	}
+
+}
