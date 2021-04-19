@@ -40,11 +40,29 @@ describe('RxFormMapper', () => {
 		expect(formMapper.writeForm(new Test(), Test)).toBeTruthy();
 	}));
 
-	it('writeModel should not accept undefined type', inject([RxFormMapper], (mapper: RxFormMapper) => {
+	it('fromType should create form', inject([RxFormMapper], (formMapper: RxFormMapper) => {
+		class Test {
+			@FormControl()
+			public name: string;
+		}
+
+		expect(formMapper.fromType(Test).get('name')).toBeTruthy();
+	}));
+
+	it('fromType should throw error', inject([RxFormMapper], (formMapper: RxFormMapper) => {
+		class Test {
+			@FormControl()
+			public name: string;
+		}
+
+		expect(() => formMapper.fromType(null)).toThrow();
+	}));
+
+	it('writeForm should not accept undefined type', inject([RxFormMapper], (mapper: RxFormMapper) => {
 		expect(() => mapper.writeForm(null, null)).toThrow();
 	}));
 
-	it('writeModel should return FormGroup', inject([RxFormMapper], (mapper: RxFormMapper) => {
+	it('writeForm should return FormGroup', inject([RxFormMapper], (mapper: RxFormMapper) => {
 		class TestClass {}
 		expect(mapper.writeForm(null, TestClass) instanceof NgFormGroup).toBeTruthy();
 	}));
