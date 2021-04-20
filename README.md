@@ -1,13 +1,11 @@
+<img src="https://github.com/KernelPanic92/rx-form-mapper/raw/master/resources/logo_big.png"/>
 
-
-# RxFormMapper
-
-[![Build Status](https://travis-ci.org/KernelPanic92/rx-form-mapper.svg?branch=master)](https://travis-ci.org/KernelPanic92/rx-form-mapper)
 [![codecov](https://codecov.io/gh/KernelPanic92/rx-form-mapper/branch/master/graph/badge.svg)](https://codecov.io/gh/KernelPanic92/rx-form-mapper)
 [![npm version](https://badge.fury.io/js/rx-form-mapper.svg)](https://badge.fury.io/js/rx-form-mapper)
 [![dependencies Status](https://david-dm.org/KernelPanic92/rx-form-mapper/status.svg)](https://david-dm.org/KernelPanic92/rx-form-mapper)
 [![NPM License](https://img.shields.io/npm/l/rx-form-mapper.svg)](https://img.shields.io/npm/l/rx-form-mapper.svg)
 [![NPM bundle size](https://img.shields.io/bundlephobia/min/rx-form-mapper.svg)](https://img.shields.io/bundlephobia/min/rx-form-mapper.svg)
+[![semantic-release](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg)](https://github.com/semantic-release/semantic-release)
 
 RxFormMapper is a framework developed for angular and allows you to convert, by annotation, classes into reactive form and vice versa.
 
@@ -163,6 +161,14 @@ This method converts our class instance into reactive form instance
 
 ```typescript
 this.form = formMapper.writeForm(new Post());
+```
+
+### fromType
+
+This method converts our class type into reactive form instance
+
+```typescript
+this.form = formMapper.fromType(Post);
 ```
 
 ### readForm
