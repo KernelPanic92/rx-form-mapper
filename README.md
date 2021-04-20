@@ -163,6 +163,14 @@ This method converts our class instance into reactive form instance
 this.form = formMapper.writeForm(new Post());
 ```
 
+### fromType
+
+This method converts our class type into reactive form instance
+
+```typescript
+this.form = formMapper.fromType(Post);
+```
+
 ### readForm
 
 This method converts our form instance into specific class instance
