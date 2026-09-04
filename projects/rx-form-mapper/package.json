@@ -24,7 +24,7 @@
     "tslib": "2.1.0"
   },
   "peerDependencies": {
-    "@angular/common": "^7.1.0 || ^8.0.0 || ^11.0.0",
+    "@angular/common": "^19.2.16 ^19.2.16 ^19.2.16",
     "@angular/core": "^7.1.0 || ^8.0.0 || ^11.0.0"
   }
 }
